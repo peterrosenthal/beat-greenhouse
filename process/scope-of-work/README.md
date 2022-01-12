@@ -28,26 +28,26 @@ And the final deliverable, both in the order I'm bringing it up and also in the 
 Even though I have a relatively good idea of what I'd like to accomplish, and I even have previous progress on the concept of this project, I still feel like the path forward is a *little* bit volatile. And because of that, my predictided timeline is probably going to be a little bit more accurate at the beginning than at the end, and probably a lot more accurate at the end than during the middle of it all. So I wont be too had on myself if I'm not actually accomplishing the same tasks as I predict I will be, especially in the middle of the timeline, and double especially if it is due to a (realistically relatively slight) change in creative direction to the project.
 
 The general predicted timeline for this project is as follows:
-* **Week 1** - January 10 - 14
+* **Week 1**: January 10 - 14
   * Create the scope of work document.
-* **Week 2** - January 15 - 21
+* **Week 2**: January 15 - 21
   * First week of development.
-  * Create a new plant generation system from scratch, what we learned from the last one is that it's not the right path and we need to take a new one!
+  * Create a new plant generation system from scratch, what I learned from the last one is that it's not the right path and I need to take a new one!
   * Idea to look into: content/neighborhood aware L-systems.
-* **Week 3** - January 22 - 28
+* **Week 3**: January 22 - 28
   * Continued development of plant generation system.
-* **Week 4** - January 29 - February 4
+* **Week 4** : January 29 - February 4
   * Continued development of plant generation system.
   * Idea to look into: different kinds of plants (grasses, trees, cacti)?
-* **Week 5** - February 5 - 11
+* **Week 5**: February 5 - 11
   * Finish making the plant generator look pretty.
   * Idea to look into: flowers and other plant accessories.
-* **Week 6** - February 12 - 18
+* **Week 6**: February 12 - 18
   * Create the first person controller and start working on the surrounding greenhouse.
-* **Week 7** - February 19 - 25
+* **Week 7**: February 19 - 25
   * Continue working on the greenhouse and other environmental surroundings.
   * Idea to look into: what are the plants *in*? Clay pots? The ground?
-* **Week 8** - February 26 - March 4
+* **Week 8**: February 26 - March 4
   * 50% of main development checkpoint.
   * By this point there should be:
     * Cool looking plants
@@ -55,7 +55,7 @@ The general predicted timeline for this project is as follows:
     * In a greenhouse
     * That is navagigable by a first person controller
   * This is honestly pretty much what I would consider project MVP, assuming that a minimal (but bad) UI has been developed along the way.
-* **Week 9** - March 5 - 11
+* **Week 9**: March 5 - 11
   * Start developing a good, usable, and understandable UI to control things such as:
     * Which two plants are being bred together?
     * Which greenhouse are we in? (if I decide to go the multiple greenhouses route)
@@ -63,22 +63,22 @@ The general predicted timeline for this project is as follows:
     * How similar should the children be to their parents and to their siblings?
     * How many children should be created?
     * And many more controls over the breeding and cultivating process.
-* **Week 10** - March 12 - 18
+* **Week 10**: March 12 - 18
   * Continue development on the UI.
-* **Week 11** - March 19 - 25
+* **Week 11**: March 19 - 25
   * Continue development on the UI.
   * Incorporate MIDI import into the "good" part of the UI. I likely will have roughed this in much earlier because it was present in previous projects of the Beat Greenhouse concept, but I'm going to try to hold off on wasting the time to make it actually "good" until later on, so I can dedicate the earlier time to more important aspects of the project.
-* **Week 12** - March 26 - April 1
+* **Week 12**: March 26 - April 1
   * Continue development on the UI.
   * Now is probably the time to work on incorporating MIDI export into the UI.
   * Idea to look into: MIDI import and export as game elements instead of UI elements?
-* **Week 13** - April 2 - 8
+* **Week 13**: April 2 - 8
   * This is extra time to allow me to catch up on development of the project, and maybe even get a head start on the video(s). No specific milestones to call out for this week.
-* **Week 14** - April 9 - 15
+* **Week 14**: April 9 - 15
   * Finish main development of project.
   * Final tweaks and finishing touches are okay from here on out, but absolutely no major development as most of the remaining time needs to be saved for videos.
-* **Week 15** - April 16 - 22
+* **Week 15**: April 16 - 22
   * Start creating video(s).
   * Idea to look into: two videos or just one?
-* **Week 16** - April 23 - 28
+* **Week 16**: April 23 - 28
   * Finish creation of the final video and/or game trailer.
