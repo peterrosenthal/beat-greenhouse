@@ -15,7 +15,7 @@ As it stands, there are 4 major development hurdles/objectives that have to be o
 4. Not everything can be a game element though, and there does have to be some level of user interface, and it has to be *good* because the user needs to have pretty good control over the "breeding" algorithm that actually happens if they want to maximize how well the game works in terms of giving them musical (and visual) results they enjoy. So there has to be a UI that makes these controls easy to understand and quick to use.
 
 ## Advisor Meeting Times
-I would like to have weekly meetings to check in with my advisor, Matt Bethancourt, as long as that would work for him as well. The meetings will happen on __________(some day of the week) at ______(approximate time). The meetings will occur __________(in the Whaaat?! Lab or on Zoom?).
+I will be having weekly meetings to check in with my advisor, Matt Bethancourt, on Thursdays at 10:45 in the Whaaat?! Lab.
 
 ## Deliverables
 First, and the most important deliverable to me personally, I will be delivering a "process log" at the end of semester that contains weekly written updates about what I have accomplished in the past week, how I accomplished it, and much more! In each and every process log update, I will measure progress by comparing my actual state of working on the project to the predicted timeline below, and hopefully I wont be too far off. These process logs will also contain plenty of gifs and screenshots of the project along the way, making my video at the end much easier. I plan on updating the process log on Friday evenings, after I've done all the work I want to on that Friday. That means that my "work week" scedule goes from Saturday to Friday every week. The exceptions are this first week, which is starting on Monday, because I didn't do any work the weekend before the semeseter started, and the last week, which ends on Thursday, because that's the last day of class.
@@ -36,6 +36,7 @@ The general predicted timeline for this project is as follows:
   * Idea to look into: content/neighborhood aware L-systems.
 * **Week 3**: January 22 - 28
   * Continued development of plant generation system.
+  * Idea to look into: for consistent randomness that is also similar between siblings: latent space values -> noise function location input.
 * **Week 4** : January 29 - February 4
   * Continued development of plant generation system.
   * Idea to look into: different kinds of plants (grasses, trees, cacti)?
