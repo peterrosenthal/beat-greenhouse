@@ -13,6 +13,7 @@ export default class PlantGenerator {
   numIterations: number;
   attractionRadius: number;
   growthSpeed: number;
+  killDistance: number;
 
   visualizeAttractors: boolean;
   visualizeNodes: boolean;
@@ -24,6 +25,7 @@ export default class PlantGenerator {
     this.numIterations = 30;
     this.attractionRadius = 5;
     this.growthSpeed = 0.1;
+    this.killDistance = 0.8;
 
     this.visualizeAttractors = true;
     this.visualizeNodes = true;
@@ -34,7 +36,7 @@ export default class PlantGenerator {
     const plant = new THREE.Group();
 
     // generate attraction points
-    const attractors: THREE.Vector3[] = [];
+    let attractors: THREE.Vector3[] = [];
     for (let i = 0; i < this.numAttractors; i++) {
       attractors.push(new THREE.Vector3(
         (Math.random() - 0.5) * this.envelopeSize + this.envelopePosition.x,
@@ -137,6 +139,25 @@ export default class PlantGenerator {
       for (const node of nodes) {
         node.attractors = [];
       }
+
+      // remove attractors that have been reached by a node within the "kill distance"
+      const attractorsToRemove: THREE.Vector3[] = [];
+      for (const attractor of attractors) {
+        for (const node of nodes) {
+          if (attractor.distanceTo(node.position) < this.killDistance) {
+            attractorsToRemove.push(attractor);
+            break;
+          }
+        }
+      }
+      attractors = attractors.filter(function(attractor) {
+        for (const attractorToRemove of attractorsToRemove) {
+          if (attractor === attractorToRemove) {
+            return false;
+          }
+        }
+        return true;
+      });
     }
 
     // visualize the nodes in a buffergeometry to verify it is working

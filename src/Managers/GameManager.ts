@@ -115,6 +115,12 @@ export default class GameManager {
       .max(50)
       .step(0.01);
     this.gui
+      .add(generator, 'killDistance')
+      .name('killDistance')
+      .min(0.01)
+      .max(100)
+      .step(0.01);
+    this.gui
       .add(generator, 'visualizeAttractors')
       .name('visualizeAttractors');
     this.gui
