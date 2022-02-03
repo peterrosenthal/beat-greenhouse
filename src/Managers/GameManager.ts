@@ -66,66 +66,129 @@ export default class GameManager {
 
     // test out plant generator
     const generator = new PlantGenerator();
-    this.gui
-      .add(generator, 'numAttractors')
-      .name('numAttractors')
-      .min(1)
-      .max(10000)
-      .step(1);
-    this.gui
+    const envelopeFolder = this.gui.addFolder('envelope');
+    envelopeFolder
       .add(generator, 'envelopeSize')
-      .name('envelopeSize')
+      .name('size')
       .min(0.01)
       .max(100)
       .step(0.01);
-    this.gui
+    const envelopePositionFolder = envelopeFolder.addFolder('position');
+    envelopePositionFolder
       .add(generator.envelopePosition, 'x')
-      .name('envelopePositionX')
+      .name('x')
       .min(-10)
       .max(10)
       .step(0.01);
-    this.gui
+    envelopePositionFolder
       .add(generator.envelopePosition, 'y')
-      .name('envelopePositionY')
+      .name('x')
       .min(0)
       .max(20)
       .step(0.01);
-    this.gui
+    envelopePositionFolder
       .add(generator.envelopePosition, 'z')
-      .name('envelopePositionZ')
+      .name('x')
       .min(-10)
       .max(10)
       .step(0.01);
-    this.gui
-      .add(generator, 'numIterations')
-      .name('numIterations')
+    const envelopeNodesFolder = envelopeFolder.addFolder('nodes');
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'firstBot')
+      .name('bot1')
       .min(0)
-      .max(500)
+      .max(0.6)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'secondBot')
+      .name('bot2')
+      .min(0)
+      .max(0.6)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'thirdBot')
+      .name('bot3')
+      .min(0)
+      .max(0.6)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'firstMid')
+      .name('mid1')
+      .min(0.4)
+      .max(0.8)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'secondMid')
+      .name('mid2')
+      .min(0.4)
+      .max(0.8)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'thirdMid')
+      .name('mid3')
+      .min(0.4)
+      .max(0.8)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'firstTop')
+      .name('top1')
+      .min(0.2)
+      .max(1.0)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'secondTop')
+      .name('top2')
+      .min(0.2)
+      .max(1.0)
+      .step(0.001);
+    envelopeNodesFolder
+      .add(generator.envelopeNodes, 'thirdTop')
+      .name('top3')
+      .min(0.2)
+      .max(1.0)
+      .step(0.001);
+    const attractorsFolder = this.gui.addFolder('attractors');
+    attractorsFolder
+      .add(generator, 'numAttractors')
+      .name('number')
+      .min(1)
+      .max(10000)
       .step(1);
-    this.gui
+    attractorsFolder
       .add(generator, 'attractionRadius')
       .name('attractionRadius')
       .min(0.01)
       .max(10000)
       .step(0.01);
-    this.gui
-      .add(generator, 'growthSpeed')
-      .name('growthSpeed')
-      .min(0.01)
-      .max(50)
-      .step(0.01);
-    this.gui
+    attractorsFolder
       .add(generator, 'killDistance')
       .name('killDistance')
       .min(0.01)
       .max(100)
       .step(0.01);
-    this.gui
+    const growthFolder = this.gui.addFolder('growth');
+    growthFolder
+      .add(generator, 'numIterations')
+      .name('iterations')
+      .min(0)
+      .max(500)
+      .step(1);
+    growthFolder
+      .add(generator, 'growthSpeed')
+      .name('speed')
+      .min(0.01)
+      .max(50)
+      .step(0.01);
+    const visualizeFolder = this.gui.addFolder('visualize');
+    visualizeFolder
+      .add(generator, 'visualizeEnvelope')
+      .name('envelope');
+    visualizeFolder
       .add(generator, 'visualizeAttractors')
-      .name('visualizeAttractors');
-    this.gui
+      .name('attractors');
+    visualizeFolder
       .add(generator, 'visualizeNodes')
-      .name('visualizeNodes');
+      .name('nodes');
     this.gui
       .add(generator, 'generate')
       .name('generate');
