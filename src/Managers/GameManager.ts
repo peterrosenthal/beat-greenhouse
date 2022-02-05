@@ -148,12 +148,38 @@ export default class GameManager {
       .max(1.0)
       .step(0.001);
     const attractorsFolder = this.gui.addFolder('attractors');
-    attractorsFolder
-      .add(generator, 'numAttractors')
-      .name('number')
-      .min(1)
-      .max(10000)
-      .step(1);
+    const noiseFolder = attractorsFolder.addFolder('noise source');
+    const offsetFolder = noiseFolder.addFolder('offset');
+    offsetFolder
+      .add(generator.noiseOffset, 'x')
+      .name('x')
+      .min(-1000)
+      .max(1000)
+      .step(0.01);
+    offsetFolder
+      .add(generator.noiseOffset, 'y')
+      .name('y')
+      .min(-1000)
+      .max(1000)
+      .step(0.01);
+    offsetFolder
+      .add(generator.noiseOffset, 'z')
+      .name('z')
+      .min(-1000)
+      .max(1000)
+      .step(0.01);
+    noiseFolder
+      .add(generator, 'noiseScale')
+      .name('scale')
+      .min(0.1)
+      .max(1000)
+      .step(0.1);
+    noiseFolder
+      .add(generator, 'noiseThreshold')
+      .name('threshold')
+      .min(0.001)
+      .max(1)
+      .step(0.001);
     attractorsFolder
       .add(generator, 'attractionRadius')
       .name('attractionRadius')
