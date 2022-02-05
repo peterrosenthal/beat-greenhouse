@@ -92,68 +92,68 @@ export default class PlantGenerator {
       // get random height and deterine what the 3 lateral boundary points at that height
       let height = Math.random();
       const first = height < 0.96 ? height < 0.54 ? height < 0.12 ?
-        THREE.MathUtils.lerp(
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           0,
           this.envelopeNodes.firstBot,
           height / 0.12,
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.firstBot,
           this.envelopeNodes.firstMid,
           (height - 0.12) / (0.54 - 0.12),
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.firstMid,
           this.envelopeNodes.firstTop,
           (height - 0.54) / (0.96 - 0.54),
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.firstTop,
           0,
           (height - 0.96) / (1 - 0.96),
-        );
+        ), 0, 1);
       const second = height < 0.96 ? height < 0.54 ? height < 0.12 ?
-        THREE.MathUtils.lerp(
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           0,
           this.envelopeNodes.secondBot,
           height / 0.12,
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.secondBot,
           this.envelopeNodes.secondMid,
           (height - 0.12) / (0.54 - 0.12),
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.secondMid,
           this.envelopeNodes.secondTop,
           (height - 0.54) / (0.96 - 0.54),
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.secondTop,
           0,
           (height - 0.96) / (1 - 0.96),
-        );
+        ), 0, 1);
       const third = height < 0.96 ? height < 0.54 ? height < 0.12 ?
-        THREE.MathUtils.lerp(
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           0,
           this.envelopeNodes.thirdBot,
           height / 0.12,
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.thirdBot,
           this.envelopeNodes.thirdMid,
           (height - 0.12) / (0.54 - 0.12),
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.thirdMid,
           this.envelopeNodes.thirdTop,
           (height - 0.54) / (0.96 - 0.54),
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.thirdTop,
           0,
           (height - 0.96) / (1 - 0.96),
-        );
+        ), 0, 1);
       height *= this.envelopeSize;
 
       // get random angle
@@ -161,9 +161,21 @@ export default class PlantGenerator {
 
       // get random radius and scale it by the interpolated boundary
       let radius = theta < 4 * Math.PI / 3 ? theta < 2 * Math.PI / 3 ?
-        THREE.MathUtils.lerp(first, second, theta / (2 * Math.PI / 3)):
-        THREE.MathUtils.lerp(second, third, theta / (2 * Math.PI / 3) - 1):
-        THREE.MathUtils.lerp(third, first, theta / (2 * Math.PI / 3) - 2);
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
+          first,
+          second,
+          theta / (2 * Math.PI / 3),
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
+          second,
+          third,
+          theta / (2 * Math.PI / 3) - 1,
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
+          third,
+          first,
+          theta / (2 * Math.PI / 3) - 2,
+        ), 0, 1);
       radius *= (1 - Math.pow(Math.random(), 2)) * this.envelopeSize / 2;
       attractors.push(new THREE.Vector3(
         this.envelopePosition.x + Math.cos(theta) * radius,
@@ -285,44 +297,44 @@ export default class PlantGenerator {
     for (let i = 0; i < layers; i++) {
       const mid = (layers - 1) / 2;
       const first = i < mid ?
-        THREE.MathUtils.lerp(
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.firstBot,
           this.envelopeNodes.firstMid,
           i / mid,
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.firstMid,
           this.envelopeNodes.firstTop,
           (i - mid) / mid,
-        );
+        ), 0, 1);
       const second = i < mid ?
-        THREE.MathUtils.lerp(
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.secondBot,
           this.envelopeNodes.secondMid,
           i / mid,
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.secondMid,
           this.envelopeNodes.secondTop,
           (i - mid) / mid,
-        );
+        ), 0, 1);
       const third = i < mid ?
-        THREE.MathUtils.lerp(
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.thirdBot,
           this.envelopeNodes.thirdMid,
           i / mid,
-        ):
-        THREE.MathUtils.lerp(
+        ), 0, 1):
+        THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(
           this.envelopeNodes.thirdMid,
           this.envelopeNodes.thirdTop,
           (i - mid) / mid,
-        );
+        ), 0, 1);
       for (let j = 0; j < resolution; j++) {
         const t = j / resolution;
         let radius = t < 2 / 3 ? t < 1 / 3 ?
-          THREE.MathUtils.lerp(first, second, t * 3):
-          THREE.MathUtils.lerp(second, third, t * 3 - 1):
-          THREE.MathUtils.lerp(third, first, t * 3 - 2);
+          THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(first, second, t * 3), 0, 1):
+          THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(second, third, t * 3 - 1), 0, 1):
+          THREE.MathUtils.smootherstep(THREE.MathUtils.lerp(third, first, t * 3 - 2), 0, 1);
         radius *= this.envelopeSize / 2;
         const theta = t *  2 * Math.PI;
         points.push(new THREE.Vector3(
