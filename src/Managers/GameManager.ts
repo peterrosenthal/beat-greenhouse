@@ -172,23 +172,36 @@ export default class GameManager {
       .add(generator, 'noiseScale')
       .name('scale')
       .min(0.1)
-      .max(1000)
+      .max(20)
       .step(0.1);
     noiseFolder
       .add(generator, 'noiseThreshold')
       .name('threshold')
-      .min(0.001)
+      .min(0.6)
+      .max(1)
+      .step(0.001);
+    const skewFolder = noiseFolder.addFolder('threshold skew');
+    skewFolder
+      .add(generator, 'noiseThresholdSkewLocation')
+      .name('location')
+      .min(0)
+      .max(1)
+      .step(0.001);
+    skewFolder
+      .add(generator, 'noiseThresholdSkewAmount')
+      .name('amount')
+      .min(-1)
       .max(1)
       .step(0.001);
     attractorsFolder
       .add(generator, 'attractionRadius')
-      .name('attractionRadius')
+      .name('attraction radius')
       .min(0.01)
       .max(10000)
       .step(0.01);
     attractorsFolder
       .add(generator, 'killDistance')
-      .name('killDistance')
+      .name('kill distance')
       .min(0.01)
       .max(100)
       .step(0.01);

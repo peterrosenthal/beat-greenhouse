@@ -20,6 +20,8 @@ export default class PlantGenerator {
   noiseOffset: THREE.Vector3;
   noiseScale: number;
   noiseThreshold: number;
+  noiseThresholdSkewLocation: number;
+  noiseThresholdSkewAmount: number;
   attractionRadius: number;
   killDistance: number;
 
@@ -53,8 +55,10 @@ export default class PlantGenerator {
 
     // attractors
     this.noiseOffset = new THREE.Vector3(0, 0, 0);
-    this.noiseScale = 50;
+    this.noiseScale = 5;
     this.noiseThreshold = 0.9;
+    this.noiseThresholdSkewLocation = 0.5;
+    this.noiseThresholdSkewAmount = 0.5;
     this.attractionRadius = 5;
     this.killDistance = 0.8;
 
@@ -214,12 +218,32 @@ export default class PlantGenerator {
             this.envelopePosition.y + height,
             this.envelopePosition.z + Math.sin(theta) * radius,
           );
+          const percentRad = radius / maxRadius;
+          /* eslint-disable indent */
+          /* eslint-disable max-len */
+          const thresholdSkew = this.noiseThresholdSkewAmount
+            * Math.min(this.noiseThreshold - 0.6, 0.99 - this.noiseThreshold)
+            * (this.noiseThresholdSkewLocation < 1 ? this.noiseThresholdSkewLocation < 0.9 ? this.noiseThresholdSkewLocation < 0.1 ? this.noiseThresholdSkewLocation === 0 ?
+              THREE.MathUtils.lerp(1, -1, percentRad):
+              (percentRad < this.noiseThresholdSkewLocation ?
+                THREE.MathUtils.lerp(0, 1, percentRad / this.noiseThresholdSkewLocation):
+                THREE.MathUtils.lerp(1, -1, (percentRad - this.noiseThresholdSkewLocation) / (1 - this.noiseThresholdSkewLocation))):
+              (percentRad < this.noiseThresholdSkewLocation ?
+                THREE.MathUtils.lerp(-1, 1, percentRad / this.noiseThresholdSkewLocation):
+                THREE.MathUtils.lerp(1, -1, (percentRad - this.noiseThresholdSkewLocation) / (1 - this.noiseThresholdSkewLocation))):
+              (percentRad < this.noiseThresholdSkewLocation ?
+                THREE.MathUtils.lerp(-1, 1, percentRad / this.noiseThresholdSkewLocation):
+                THREE.MathUtils.lerp(1, 0, (percentRad - this.noiseThresholdSkewLocation) / (1 - this.noiseThresholdSkewLocation))):
+              THREE.MathUtils.lerp(-1, 1, percentRad));
+          /* eslint-disable indent */
+          /* eslint-disable max-len */
+          const threshold = this.noiseThreshold - thresholdSkew;
           const noisePoint = point
             .clone()
             .multiplyScalar(this.noiseScale)
             .add(this.noiseOffset);
           const noise = this.simplex.noise3D(noisePoint.x, noisePoint.y, noisePoint.z);
-          if (noise > this.noiseThreshold) {
+          if (noise > threshold) {
             attractors.push(point);
           }
         }
