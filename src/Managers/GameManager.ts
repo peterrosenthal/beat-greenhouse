@@ -4,6 +4,9 @@ import * as lil from 'lil-gui';
 import PlantGenerator from '../Generators/PlantGenerator';
 import SizeManager from './SizeManager';
 import TimeManager from './TimeManager';
+import Lights from '../Environment/Lights';
+import Skybox from '../Environment/Skybox';
+import ResourceManager from './ResourceManager/ResourceManager';
 
 export default class GameManager {
   private static S?: GameManager;
@@ -19,13 +22,15 @@ export default class GameManager {
 
   scene: THREE.Scene;
   gui: lil.GUI;
+  canvas: HTMLCanvasElement;
+  renderer: THREE.WebGLRenderer;
 
-  private canvas: HTMLCanvasElement;
+  // anything created in the init function must be non-null asserted
+  lights!: Lights;
+  skybox!: Skybox;
+
   private camera: THREE.PerspectiveCamera;
   private controls: OrbitControls;
-  private renderer: THREE.WebGLRenderer;
-  private ambientLight: THREE.AmbientLight;
-  private directionalLight: THREE.DirectionalLight;
 
   private constructor() {
     // get the canvas dom element
@@ -65,12 +70,6 @@ export default class GameManager {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
     this.renderer.setSize(this.sizeManager.width, this.sizeManager.height);
     this.renderer.setPixelRatio(this.sizeManager.pixelRatio);
-
-    // lights
-    this.ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
-    this.directionalLight.position.set(1.5, 5, 1);
-    this.scene.add(this.ambientLight, this.directionalLight);
 
     // test out plant generator
     const generator = new PlantGenerator();
@@ -261,6 +260,16 @@ export default class GameManager {
     this.gui
       .add(generator, 'generate')
       .name('generate');
+
+    // resource manager must always be the last thing in the game manager's
+    // constructor in order to avoid race condition issues
+    this.init = this.init.bind(this);
+    ResourceManager.getInstance().on('loaded', this.init);
+  }
+
+  private init(): void {
+    this.lights = new Lights();
+    this.skybox = new Skybox();
   }
 
   private update(): void {
