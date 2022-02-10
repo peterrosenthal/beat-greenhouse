@@ -24,6 +24,8 @@ export default class GameManager {
   private camera: THREE.PerspectiveCamera;
   private controls: OrbitControls;
   private renderer: THREE.WebGLRenderer;
+  private ambientLight: THREE.AmbientLight;
+  private directionalLight: THREE.DirectionalLight;
 
   private constructor() {
     // get the canvas dom element
@@ -63,6 +65,12 @@ export default class GameManager {
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
     this.renderer.setSize(this.sizeManager.width, this.sizeManager.height);
     this.renderer.setPixelRatio(this.sizeManager.pixelRatio);
+
+    // lights
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    this.directionalLight.position.set(1.5, 5, 1);
+    this.scene.add(this.ambientLight, this.directionalLight);
 
     // test out plant generator
     const generator = new PlantGenerator();
@@ -211,12 +219,31 @@ export default class GameManager {
       .name('iterations')
       .min(0)
       .max(500)
-      .step(1);
+      .step(1)
+      .onChange(() => generator.generate());
     growthFolder
       .add(generator, 'growthSpeed')
       .name('speed')
       .min(0.01)
       .max(50)
+      .step(0.01);
+    growthFolder
+      .add(generator, 'thicknessGrowthFactor')
+      .name('thickness fast growth')
+      .min(0)
+      .max(0.01)
+      .step(0.00001);
+    growthFolder
+      .add(generator, 'slowThicknessGrowthFactor')
+      .name('thickness slow growth')
+      .min(0)
+      .max(0.01)
+      .step(0.00001);
+    growthFolder
+      .add(generator, 'thicknessCombinationFactor')
+      .name('thickness combination factor')
+      .min(0.01)
+      .max(5)
       .step(0.01);
     const visualizeFolder = this.gui.addFolder('visualize');
     visualizeFolder
@@ -228,6 +255,9 @@ export default class GameManager {
     visualizeFolder
       .add(generator, 'visualizeNodes')
       .name('nodes');
+    visualizeFolder
+      .add(generator, 'visualizeStems')
+      .name('stems and branches');
     this.gui
       .add(generator, 'generate')
       .name('generate');

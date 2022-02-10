@@ -3,8 +3,11 @@ import SimplexNoise from 'simplex-noise';
 import GameManager from '../Managers/GameManager';
 
 interface Node {
+  parent?: Node,
+  children: Node[],
   position: THREE.Vector3,
   attractors: THREE.Vector3[],
+  radius: number,
 }
 
 export default class PlantGenerator {
@@ -28,11 +31,15 @@ export default class PlantGenerator {
   // growth
   numIterations: number;
   growthSpeed: number;
+  thicknessGrowthFactor: number;
+  slowThicknessGrowthFactor: number;
+  thicknessCombinationFactor: number;
 
   // what to visualize
   visualizeEnvelope: boolean;
   visualizeAttractors: boolean;
   visualizeNodes: boolean;
+  visualizeStems: boolean;
 
   constructor() {
     // initialize the simplex noise instance
@@ -63,18 +70,23 @@ export default class PlantGenerator {
     this.killDistance = 0.8;
 
     // growth
-    this.numIterations = 30;
+    this.numIterations = 80;
     this.growthSpeed = 0.1;
+    this.thicknessGrowthFactor = 0.001;
+    this.slowThicknessGrowthFactor = 0.0001;
+    this.thicknessCombinationFactor = 2.5;
 
     // what to visualize
-    this.visualizeEnvelope = true;
+    this.visualizeEnvelope = false;
     this.visualizeAttractors = false;
     this.visualizeNodes = false;
+    this.visualizeStems = true;
   }
 
   generate(): void {
     // final plant object is a group that may include many different parts
     const plant = new THREE.Group();
+    plant.name = 'plant';
 
     // visualize attraction envelope
     if (this.visualizeEnvelope) {
@@ -96,8 +108,13 @@ export default class PlantGenerator {
       this.visualizeNodePoints(plant, nodes);
     }
 
+    // visualize the nodes in a group of cylinder geometry meshes based on their radius
+    if (this.visualizeStems) {
+      this.visualizeNodeCylinders(plant, nodes);
+    }
+
     const scene = GameManager.getInstance().scene;
-    scene.traverse(function(object) { scene.remove(object); });
+    scene.traverse(function(object) { if (object.name === 'plant') scene.remove(object); });
     scene.add(plant);
   }
 
@@ -235,8 +252,8 @@ export default class PlantGenerator {
                 THREE.MathUtils.lerp(-1, 1, percentRad / this.noiseThresholdSkewLocation):
                 THREE.MathUtils.lerp(1, 0, (percentRad - this.noiseThresholdSkewLocation) / (1 - this.noiseThresholdSkewLocation))):
               THREE.MathUtils.lerp(-1, 1, percentRad));
-          /* eslint-disable indent */
-          /* eslint-disable max-len */
+          /* eslint-enable indent */
+          /* eslint-enable max-len */
           const threshold = this.noiseThreshold - thresholdSkew;
           const noisePoint = point
             .clone()
@@ -255,16 +272,20 @@ export default class PlantGenerator {
   private generateNodes(attractors: THREE.Vector3[]): Node[] {
     // first node of the stem + branches is at local point (0,0,0)
     const nodes: Node[] = [];
-    nodes.push({
+    const root: Node = {
+      parent: undefined,
+      children: [],
       position: new THREE.Vector3(),
       attractors: [],
-    });
+      radius: 0,
+    };
+    nodes.push(root);
     // iteratively add nodes through a space colonization algorithm
     let plantIsMature = false;
     for (let i = 0; i < this.numIterations; i++) {
       // find the node that is closest (and within attraction distance) to each attractor
       let noAttractorCloseEnough = !plantIsMature;
-      for (const attractor of attractors) {
+      for (const attractor of attractors) { 
         let closestNode: Node | undefined;
         let closestDistance = this.attractionRadius;
         for (const node of nodes) {
@@ -286,17 +307,21 @@ export default class PlantGenerator {
           centerOfMass.add(attractor);
         }
         centerOfMass.divideScalar(attractors.length);
-        const lastNode = nodes[nodes.length - 1];
-        nodes.push({
-          position: lastNode.position.clone().add(
+        const parent = nodes[nodes.length - 1];
+        const child: Node = {
+          parent: parent,
+          children: [],
+          position: parent.position.clone().add(
             centerOfMass
               .clone()
-              .sub(lastNode.position)
+              .sub(parent.position)
               .normalize()
-              .multiplyScalar(this.growthSpeed),
-          ),
+              .multiplyScalar(this.growthSpeed)),
           attractors: [],
-        });
+          radius: 0,
+        };
+        parent.children.push(child);
+        nodes.push(child);
       } else {
         // if there are attractors successfully at play then we can loop through
         // all the nodes and add even more nodes based on the direction towards
@@ -310,16 +335,20 @@ export default class PlantGenerator {
               centerOfMass.add(attractor);
             }
             centerOfMass.divideScalar(node.attractors.length);
-            nodesToAdd.push({
+            const child: Node = {
+              parent: node,
+              children: [],
               position: node.position.clone().add(
                 centerOfMass
                   .clone()
                   .sub(node.position)
                   .normalize()
-                  .multiplyScalar(this.growthSpeed),
-              ),
+                  .multiplyScalar(this.growthSpeed)),
               attractors: [],
-            });
+              radius: 0,
+            };
+            node.children.push(child);
+            nodesToAdd.push(child);
           }
         }
         nodes.push(...nodesToAdd);
@@ -348,6 +377,45 @@ export default class PlantGenerator {
         }
         return true;
       });
+    }
+
+    // calculate the radius of the stem/branches at each node based on how
+    // many (recursively) children nodes they have on the tree.
+    for (const node of nodes) {
+      if (node.children.length === 0) {
+        let growth = this.thicknessGrowthFactor;
+        let radiusToAdd = 0;
+        let safety = 0;
+        let current = node;
+        let previous: Node | undefined;
+        while (current.parent !== undefined) {
+          if (safety > this.numIterations) {
+            console.error('tree formed a loop somehow!');
+            break;
+          }
+
+          if (current.radius !== 0 && growth !== this.slowThicknessGrowthFactor) {
+            growth = this.slowThicknessGrowthFactor;
+          }
+
+          if (current.children.length > 1 && previous !== undefined) {
+            let newRadius = 0;
+            for (const child of current.children) {
+              newRadius += Math.pow(child.radius, this.thicknessCombinationFactor);
+            }
+            newRadius = Math.pow(newRadius, 1 / this.thicknessCombinationFactor);
+            radiusToAdd = newRadius - current.radius;
+            current.radius = newRadius;
+          } else {
+            current.radius += radiusToAdd;
+          }
+          
+          radiusToAdd += growth;
+          safety++;
+          previous = current;
+          current = current.parent;
+        }
+      }
     }
 
     return nodes;
@@ -536,5 +604,43 @@ export default class PlantGenerator {
     });
     const nodePoints = new THREE.Points(geometry, material);
     parent.add(nodePoints);
+  }
+
+  private visualizeNodeCylinders(parent: THREE.Object3D, nodes: Node[]): void {
+    const cylinders = new THREE.Group();
+    parent.add(cylinders);
+
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x6c441a,
+      roughness: 0.8,
+    });
+
+    for (const node of nodes) {
+      for (const child of node.children) {
+        const geometry = new THREE.CylinderGeometry(
+          child.radius,
+          node.radius,
+          this.growthSpeed,
+          64,
+        );
+        const cylinder = new THREE.Mesh(geometry, material);
+        const direction3d = child.position
+          .clone()
+          .sub(node.position)
+          .normalize();
+        const direction2d = new THREE.Vector3(direction3d.x, 0, direction3d.z).normalize();
+        const position = node.position
+          .clone()
+          .add(child.position)
+          .divideScalar(2);
+        cylinder.rotateY(
+          (direction2d.z <= 0 ? 1 : -1) *
+          direction2d.angleTo(new THREE.Vector3(1, 0, 0)) +
+          Math.PI / 2);
+        cylinder.rotateX(direction3d.angleTo(new THREE.Vector3(0, 1, 0)));
+        cylinder.position.copy(position);
+        cylinders.add(cylinder);
+      }
+    }
   }
 }
