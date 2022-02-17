@@ -2,12 +2,20 @@ import * as THREE from 'three';
 import SimplexNoise from 'simplex-noise';
 import GameManager from '../Managers/GameManager';
 
+interface Leaf {
+  height: number,
+  size: number,
+  psi: number,
+  theta: number,
+}
+
 interface Node {
   parent?: Node,
   children: Node[],
   position: THREE.Vector3,
   attractors: THREE.Vector3[],
   radius: number,
+  leaves: Leaf[],
 }
 
 export default class PlantGenerator {
@@ -35,11 +43,20 @@ export default class PlantGenerator {
   slowThicknessGrowthFactor: number;
   thicknessCombinationFactor: number;
 
+  // leaves
+  leafMaxBranchRadius: number;
+  leafSize: number;
+  leafSeparationAngle: number;
+  leafDensity: number;
+  leafStemAngleAvg: number;
+  leafStemAngleVariance: number;
+
   // what to visualize
   visualizeEnvelope: boolean;
   visualizeAttractors: boolean;
   visualizeNodes: boolean;
   visualizeStems: boolean;
+  visualizeLeaves: boolean;
 
   constructor() {
     // initialize the simplex noise instance
@@ -75,12 +92,22 @@ export default class PlantGenerator {
     this.thicknessGrowthFactor = 0.001;
     this.slowThicknessGrowthFactor = 0.0001;
     this.thicknessCombinationFactor = 2.5;
+    
+
+    // leaves
+    this.leafMaxBranchRadius = 0.01;
+    this.leafSize = 0.1;
+    this.leafSeparationAngle = 1.618;
+    this.leafDensity = 1;
+    this.leafStemAngleAvg = 0.75;
+    this.leafStemAngleVariance = 0.1;
 
     // what to visualize
     this.visualizeEnvelope = false;
     this.visualizeAttractors = false;
     this.visualizeNodes = false;
     this.visualizeStems = true;
+    this.visualizeLeaves = true;
   }
 
   generate(): void {
@@ -111,6 +138,11 @@ export default class PlantGenerator {
     // visualize the nodes in a group of cylinder geometry meshes based on their radius
     if (this.visualizeStems) {
       this.visualizeNodeCylinders(plant, nodes);
+    }
+
+    // visualize some leaves on the branches
+    if (this.visualizeLeaves) {
+      this.visualizeNodeLeaves(plant, nodes);
     }
 
     const scene = GameManager.getInstance().scene;
@@ -278,6 +310,7 @@ export default class PlantGenerator {
       position: new THREE.Vector3(),
       attractors: [],
       radius: 0,
+      leaves: [],
     };
     nodes.push(root);
     // iteratively add nodes through a space colonization algorithm
@@ -319,6 +352,7 @@ export default class PlantGenerator {
               .multiplyScalar(this.growthSpeed)),
           attractors: [],
           radius: 0,
+          leaves: [],
         };
         parent.children.push(child);
         nodes.push(child);
@@ -346,6 +380,7 @@ export default class PlantGenerator {
                   .multiplyScalar(this.growthSpeed)),
               attractors: [],
               radius: 0,
+              leaves: [],
             };
             node.children.push(child);
             nodesToAdd.push(child);
@@ -415,6 +450,29 @@ export default class PlantGenerator {
           previous = current;
           current = current.parent;
         }
+      }
+    }
+
+    // add leaves to the nodes
+    for (const node of nodes) {
+      if (node.radius > this.leafMaxBranchRadius) {
+        continue;
+      }
+      const leafDistance = 1 / this.leafDensity;
+      let height = 0;
+      let theta = 0;
+      if (node.parent !== undefined && node.parent.leaves.length > 0) {
+        const lastLeaf = node.parent.leaves[node.parent.leaves.length - 1];
+        height = leafDistance - (1 - lastLeaf.height);
+        theta = lastLeaf.theta + this.leafSeparationAngle;
+      }
+      while (height < 1) {
+        const psi = (Math.random() * 0.5) * this.leafStemAngleVariance + this.leafStemAngleAvg;
+        const size = this.leafSize;
+        node.leaves.push({ height, size, psi, theta });
+
+        height += leafDistance;
+        theta += this.leafSeparationAngle;
       }
     }
 
@@ -635,11 +693,49 @@ export default class PlantGenerator {
           .divideScalar(2);
         cylinder.rotateY(
           (direction2d.z <= 0 ? 1 : -1) *
-          direction2d.angleTo(new THREE.Vector3(1, 0, 0)) +
-          Math.PI / 2);
+          direction2d.angleTo(new THREE.Vector3(1, 0, 0)) + Math.PI / 2
+        );
         cylinder.rotateX(direction3d.angleTo(new THREE.Vector3(0, 1, 0)));
         cylinder.position.copy(position);
         cylinders.add(cylinder);
+      }
+    }
+  }
+
+  private visualizeNodeLeaves(parent: THREE.Object3D, nodes: Node[]): void {
+    const leaves = new THREE.Group();
+    parent.add(leaves);
+
+    const leafGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const leafMaterial = new THREE.MeshStandardMaterial({
+      color: 0x35824a,
+    });
+    for (const node of nodes) {
+      const parent = node.parent?.position ?? new THREE.Vector3();
+      const child = node.children[0]?.position ?? new THREE.Vector3();
+      for (const leaf of node.leaves) {
+        // visualize the leaf
+        const leafMesh = new THREE.Mesh(leafGeometry, leafMaterial);
+        leafMesh.position.set(0, 1, 0);
+        const leafParent = new THREE.Group();
+        const direction3d = child
+          .clone()
+          .sub(node.position)
+          .normalize();
+        const direction2d = new THREE.Vector3(direction3d.x, 0, direction3d.z).normalize();
+        const position = new THREE.Vector3()
+          .lerpVectors(parent, node.position, leaf.height);
+        leafParent.rotateY(
+          (direction2d.z <= 0 ? 1 : -1) *
+          direction2d.angleTo(new THREE.Vector3(1, 0, 0)) + Math.PI / 2
+        );
+        leafParent.rotateX(direction3d.angleTo(new THREE.Vector3(0, 1, 0)));
+        leafParent.rotateY(leaf.theta);
+        leafParent.rotateX(leaf.psi);
+        leafParent.position.copy(position);
+        leafParent.scale.set(leaf.size / 2, leaf.size, leaf.size / 10);
+        leafParent.add(leafMesh);
+        leaves.add(leafParent);
       }
     }
   }

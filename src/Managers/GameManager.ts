@@ -89,13 +89,13 @@ export default class GameManager {
       .step(0.01);
     envelopePositionFolder
       .add(generator.envelopePosition, 'y')
-      .name('x')
+      .name('y')
       .min(0)
       .max(20)
       .step(0.01);
     envelopePositionFolder
       .add(generator.envelopePosition, 'z')
-      .name('x')
+      .name('z')
       .min(-10)
       .max(10)
       .step(0.01);
@@ -244,6 +244,43 @@ export default class GameManager {
       .min(0.01)
       .max(5)
       .step(0.01);
+    const leavesFolder = this.gui.addFolder('leaves');
+    leavesFolder
+      .add(generator, 'leafMaxBranchRadius')
+      .name('max branch radius')
+      .min(0)
+      .max(0.8)
+      .step(0.0001);
+    leavesFolder
+      .add(generator, 'leafSize')
+      .name('size')
+      .min(0.01)
+      .max(1)
+      .step(0.001);
+    leavesFolder
+      .add(generator, 'leafSeparationAngle')
+      .name('angle around branch between leaves')
+      .min(0)
+      .max(Math.PI * 2)
+      .step(0.0001);
+    leavesFolder
+      .add(generator, 'leafDensity')
+      .name('density (leaves per node)')
+      .min(0.01)
+      .max(20)
+      .step(0.0001);
+    leavesFolder
+      .add(generator, 'leafStemAngleAvg')
+      .name('stem to leaf angle')
+      .min(0)
+      .max(Math.PI * 2)
+      .step(0.0001);
+    leavesFolder
+      .add(generator, 'leafStemAngleVariance')
+      .name('stem to leaf angle randomness')
+      .min(0)
+      .max(Math.PI)
+      .step(0.0001);
     const visualizeFolder = this.gui.addFolder('visualize');
     visualizeFolder
       .add(generator, 'visualizeEnvelope')
@@ -257,6 +294,9 @@ export default class GameManager {
     visualizeFolder
       .add(generator, 'visualizeStems')
       .name('stems and branches');
+    visualizeFolder
+      .add(generator, 'visualizeLeaves')
+      .name('leaves');
     this.gui
       .add(generator, 'generate')
       .name('generate');
