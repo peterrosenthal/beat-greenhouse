@@ -7,6 +7,7 @@ import TimeManager from './TimeManager';
 import Lights from '../Environment/Lights';
 import Skybox from '../Environment/Skybox';
 import ResourceManager from './ResourceManager/ResourceManager';
+import Greenhouse from '../Greenhouse/Greenhouse';
 
 export default class GameManager {
   private static S?: GameManager;
@@ -310,6 +311,9 @@ export default class GameManager {
   private init(): void {
     this.lights = new Lights();
     this.skybox = new Skybox();
+
+    // test out adding a greenhouse to the scene
+    new Greenhouse();
   }
 
   private update(): void {
