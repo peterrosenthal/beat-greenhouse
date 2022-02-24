@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import * as lil from 'lil-gui';
 import PlantGenerator from '../Generators/PlantGenerator';
 import SizeManager from './SizeManager';
@@ -8,6 +7,7 @@ import Lights from '../Environment/Lights';
 import Skybox from '../Environment/Skybox';
 import ResourceManager from './ResourceManager/ResourceManager';
 import Greenhouse from '../Greenhouse/Greenhouse';
+import PlayerController from '../Player/PlayerController';
 
 export default class GameManager {
   private static S?: GameManager;
@@ -21,6 +21,8 @@ export default class GameManager {
   timeManager: TimeManager;
   sizeManager: SizeManager;
 
+  playerController?: PlayerController;
+
   scene: THREE.Scene;
   gui: lil.GUI;
   canvas: HTMLCanvasElement;
@@ -29,9 +31,6 @@ export default class GameManager {
   // anything created in the init function must be non-null asserted
   lights!: Lights;
   skybox!: Skybox;
-
-  private camera: THREE.PerspectiveCamera;
-  private controls: OrbitControls;
 
   private constructor() {
     // get the canvas dom element
@@ -52,20 +51,6 @@ export default class GameManager {
 
     // scene
     this.scene = new THREE.Scene();
-
-    // camera
-    this.camera = new THREE.PerspectiveCamera(
-      35,
-      this.sizeManager.aspectRatio,
-      0.01,
-      1000,
-    );
-    this.camera.position.set(0, 0, 4);
-    this.camera.lookAt(new THREE.Vector3());
-
-    // orbit controls
-    this.controls = new OrbitControls(this.camera, this.canvas);
-    this.controls.enableDamping = true;
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
@@ -309,6 +294,10 @@ export default class GameManager {
   }
 
   private init(): void {
+    // create the player camera controller
+    this.playerController = new PlayerController();
+
+    // add environment to scene
     this.lights = new Lights();
     this.skybox = new Skybox();
 
@@ -317,17 +306,20 @@ export default class GameManager {
   }
 
   private update(): void {
-    // update orbit controls
-    this.controls.update();
+    if (this.playerController === undefined) {
+      return;
+    }
+
+    // update player controller
+    this.playerController.update();
 
     // render scene
-    this.renderer.render(this.scene, this.camera);
+    this.renderer.render(this.scene, this.playerController.camera);
   }
 
   private resize(): void {
-    // resize camera
-    this.camera.aspect = this.sizeManager.aspectRatio;
-    this.camera.updateProjectionMatrix();
+    // resize player camera
+    this.playerController?.resize();
 
     // resize renderer
     this.renderer.setSize(this.sizeManager.width, this.sizeManager.height);
