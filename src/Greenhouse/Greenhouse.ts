@@ -4,6 +4,7 @@ import ResourceManager from '../Managers/ResourceManager/ResourceManager';
 
 export default class Greenhouse {
   constructor() {
+    const gameManager = GameManager.getInstance();
     const resourceManager = ResourceManager.getInstance();
 
     const greenhouseModel = resourceManager.items.greenhouseModel as GLTF;
@@ -11,7 +12,7 @@ export default class Greenhouse {
     const showbenchModel = resourceManager.items.showbenchModel as GLTF;
     const potModel = resourceManager.items.potModel as GLTF;
 
-    const scene = GameManager.getInstance().scene;
+    const scene = gameManager.scene;
 
     workbenchModel.scene.position.z = 7.5;
     showbenchModel.scene.position.z = -4.5;
@@ -20,5 +21,7 @@ export default class Greenhouse {
     scene.add(workbenchModel.scene);
     scene.add(showbenchModel.scene);
     scene.add(potModel.scene);
+
+    gameManager.updateAllObjectMaterials();
   }
 }

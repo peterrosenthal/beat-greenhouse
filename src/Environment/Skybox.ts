@@ -17,6 +17,12 @@ export default class Skybox {
 
     const target = new THREE.WebGLCubeRenderTarget(texture.image.height);
     target.fromEquirectangularTexture(renderer, texture);
-    scene.background = target.texture;
+
+    const environment: THREE.CubeTexture = target.texture;
+    environment.encoding = THREE.sRGBEncoding;
+    scene.background = environment;
+    scene.environment = environment;
+
+    this.gameManager.updateAllObjectMaterials();
   }
 }

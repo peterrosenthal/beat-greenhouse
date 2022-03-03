@@ -21,7 +21,6 @@ export default class GameManager {
   timeManager: TimeManager;
   sizeManager: SizeManager;
 
-  playerController?: PlayerController;
 
   scene: THREE.Scene;
   gui: lil.GUI;
@@ -31,6 +30,8 @@ export default class GameManager {
   // anything created in the init function must be non-null asserted
   lights!: Lights;
   skybox!: Skybox;
+  playerController?: PlayerController;
+  greenhouse!: Greenhouse;
 
   private constructor() {
     // get the canvas dom element
@@ -48,14 +49,22 @@ export default class GameManager {
 
     // gui
     this.gui = new lil.GUI();
+    this.gui.hide();
 
     // scene
     this.scene = new THREE.Scene();
 
     // renderer
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
+    this.renderer = new THREE.WebGLRenderer({ 
+      canvas: this.canvas,
+      antialias: true,
+    });
     this.renderer.setSize(this.sizeManager.width, this.sizeManager.height);
     this.renderer.setPixelRatio(this.sizeManager.pixelRatio);
+    this.renderer.physicallyCorrectLights = true;
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    this.renderer.toneMapping = THREE.ReinhardToneMapping;
+    this.renderer.toneMappingExposure = 2;
 
     // test out plant generator
     const generator = new PlantGenerator();
@@ -293,23 +302,39 @@ export default class GameManager {
     ResourceManager.getInstance().on('loaded', this.init);
   }
 
+  updateAllObjectMaterials(): void {
+    this.updateSingleObjectMaterial = this.updateSingleObjectMaterial.bind(this);
+    this.scene.traverse(this.updateSingleObjectMaterial);
+  }
+
+  private updateSingleObjectMaterial(object: THREE.Object3D): void {
+    if (object instanceof THREE.Mesh &&
+        object.material instanceof THREE.MeshStandardMaterial) {
+      object.material.envMap = this.scene.environment;
+      object.material.envMapIntensity = 3;
+      object.material.needsUpdate = true;
+    }
+  }
+
   private init(): void {
+    // add environment to scene
+    this.skybox = new Skybox();
+    this.lights = new Lights();
+
     // create the player camera controller
     this.playerController = new PlayerController();
 
-    // add environment to scene
-    this.lights = new Lights();
-    this.skybox = new Skybox();
-
     // test out adding a greenhouse to the scene
     new Greenhouse();
+
+    this.updateAllObjectMaterials();
   }
 
   private update(): void {
     if (this.playerController === undefined) {
       return;
     }
-
+    
     // update player controller
     this.playerController.update();
 

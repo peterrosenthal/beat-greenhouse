@@ -30,6 +30,7 @@ canvas {
   height: 100%;
   background: #0000009a;
   z-index: 10;
+  color: white;
 }
 
 .menu-content {
