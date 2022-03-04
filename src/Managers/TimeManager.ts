@@ -1,39 +1,21 @@
-import EventEmitter from '../Utils/EventEmitter';
+import * as EventManager from './eventManager/eventManager';
 
-export default class TimeManager extends EventEmitter {
-  private static S?: TimeManager;
-  static getInstance(): TimeManager {
-    if (!(this.S instanceof TimeManager)) {
-      this.S = new TimeManager();
-    }
-    return this.S;
-  }
+export const start = Date.now();
+export let current = start;
+export let elapsed = 0;
+export let delta = 9;
 
-  start: number;
-  current: number;
-  elapsed: number;
-  delta: number;
+function update(): void {
+  const now = Date.now();
+  delta = now - current;
+  elapsed = now - start;
+  current = now;
 
-  private constructor() {
-    super();
+  EventManager.triggerEvent('update');
 
-    this.start = Date.now();
-    this.current = this.start;
-    this.elapsed = 0;
-    this.delta = 9;
+  window.requestAnimationFrame(update);
+}
 
-    this.update = this.update.bind(this);
-    window.requestAnimationFrame(this.update);
-  }
-
-  private update() {
-    const now = Date.now();
-    this.delta = now - this.current;
-    this.elapsed = now - this.start;
-    this.current = now;
-
-    this.trigger('update');
-
-    window.requestAnimationFrame(this.update);
-  }
+export function init(): void {
+  window.requestAnimationFrame(update);
 }

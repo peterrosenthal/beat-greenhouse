@@ -1,10 +1,10 @@
-import TimeManager from './Managers/TimeManager';
-import SizeManager from './Managers/SizeManager';
-import GameManager from './Managers/GameManager';
-import ResourceManager from './Managers/ResourceManager/ResourceManager';
+import * as EventManager from './managers/eventManager/eventManager';
+import * as ResourceManager from './managers/resourceManager/resourceManager';
+import * as SizesManager from './managers/sizesManager';
+import * as TimeManager from './managers/timeManager';
+import * as GameManager from './managers/gameManager';
 
-// instantiate all the managers
-TimeManager.getInstance();
-SizeManager.getInstance();
-GameManager.getInstance();
-ResourceManager.getInstance().loadResources();
+SizesManager.init();
+TimeManager.init();
+EventManager.addEventListener('loaded', GameManager.init);
+ResourceManager.loadResources();

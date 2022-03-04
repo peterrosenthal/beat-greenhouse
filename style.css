@@ -13,7 +13,7 @@ canvas {
   outline: none;
 }
 
-.crosshair {
+.pointer {
   position: absolute;
   width: 100%;
   top: 50%;
