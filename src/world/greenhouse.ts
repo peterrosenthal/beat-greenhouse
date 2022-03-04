@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as ResourceManager from '../managers/resourceManager/resourceManager';
 import * as GameManager from '../managers/gameManager';
@@ -7,6 +8,14 @@ export function init(): void {
   const workbenchModel = ResourceManager.items.workbenchModel as GLTF;
   const showbenchModel = ResourceManager.items.showbenchModel as GLTF;
   const potModel = ResourceManager.items.potModel as GLTF;
+
+  greenhouseModel.scene.traverse(function(object: THREE.Object3D) {
+    if (object instanceof THREE.Mesh
+     && object.material instanceof THREE.MeshStandardMaterial
+     && object.material.name === 'window') {
+      object.material.transparent = true;
+    }
+  });
 
   workbenchModel.scene.position.z = 7.5;
   showbenchModel.scene.position.z = -4.5;
