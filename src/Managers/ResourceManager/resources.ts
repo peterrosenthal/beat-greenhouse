@@ -27,6 +27,11 @@ const resources: Resource[] = [
     type: ResourceType.GLTF_MODEL,
     path: 'resources/models/greenhouse/greenhouse.gltf',
   },
+  {
+    name: 'grassTexture',
+    type: ResourceType.TEXTURE,
+    path: 'resources/textures/grass/grass.jpg',
+  },
 ];
 
 export default resources;
