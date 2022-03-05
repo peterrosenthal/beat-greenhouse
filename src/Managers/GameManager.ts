@@ -48,6 +48,7 @@ export function init(): void {
   EventManager.addEventListener('update', update);
 
   const plant = PlantGenerator.generatePlant();
+  plant.object.position.set(0, 1.2, 1.7);
   scene.add(plant.object);
 }
 
