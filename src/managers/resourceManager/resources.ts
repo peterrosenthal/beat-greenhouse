@@ -32,6 +32,11 @@ const resources: Resource[] = [
     type: ResourceType.TEXTURE,
     path: 'resources/textures/grass/grass.jpg',
   },
+  {
+    name: 'selectionAlpha',
+    type: ResourceType.TEXTURE,
+    path: 'resources/textures/selection-highlight/alpha.png',
+  },
 ];
 
 export default resources;

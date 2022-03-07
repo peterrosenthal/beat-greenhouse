@@ -4,7 +4,7 @@ import * as EventManager from './eventManager/eventManager';
 import * as PlantGenerator from '../generators/plantGenerator/plantGenerator';
 import * as PlayerController from '../world/playerController/playerController';
 import * as Environment from '../world/environment';
-import * as Greenhouse from '../world/greenhouse';
+import * as Greenhouse from '../world/greenhouse/greenhouse';
 import * as Grass from '../world/grass';
 
 export const canvas = document.querySelector('canvas')!;
@@ -53,6 +53,7 @@ export function init(): void {
 }
 
 function update(): void {
+  Greenhouse.update();
   PlayerController.update();
 
   renderer.render(scene, PlayerController.camera);
