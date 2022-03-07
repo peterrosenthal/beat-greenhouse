@@ -62,6 +62,7 @@ export function init(): void {
   controls.addEventListener('unlock', showMenu);
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
+  window.addEventListener('mousedown', onMouseDown);
 }
 
 export function resize(): void {
@@ -104,6 +105,27 @@ export function update(): void {
   controls.moveForward(velocity.z * delta);
 
   /* highlight the bench spot that the player is looking at */
+  const [bench, intersectionLocal] = getClosestBenchIntersection();
+  if (bench !== undefined && intersectionLocal !== undefined) {
+    bench.highlightBenchSegment(intersectionLocal);
+  }
+}
+
+export function lockControls(): void {
+  controls.lock();
+}
+
+export function hideMenu(): void {
+  menu.style.display = 'none';
+  pointer.style.display = 'block';
+}
+
+export function showMenu(): void {
+  pointer.style.display = 'none';
+  menu.style.display = 'block';
+}
+
+function getClosestBenchIntersection(): [Bench | undefined, THREE.Vector3 | undefined] {
   raycaster.setFromCamera(new THREE.Vector2(), camera);
   const intersections = raycaster.intersectObject(GameManager.scene, true);
   let bench: Bench | undefined;
@@ -134,23 +156,14 @@ export function update(): void {
       }
     }
   }
+  return [bench, intersectionLocal];
+}
+
+function onMouseDown(): void {
+  const [bench, intersectionLocal] = getClosestBenchIntersection();
   if (bench !== undefined && intersectionLocal !== undefined) {
-    bench.highlightBenchSegment(intersectionLocal);
+    bench.onBenchClick(intersectionLocal);
   }
-}
-
-export function lockControls(): void {
-  controls.lock();
-}
-
-export function hideMenu(): void {
-  menu.style.display = 'none';
-  pointer.style.display = 'block';
-}
-
-export function showMenu(): void {
-  pointer.style.display = 'none';
-  menu.style.display = 'block';
 }
 
 function onKeyDown(event: KeyboardEvent): void {
@@ -161,7 +174,7 @@ function onKeyUp(event: KeyboardEvent): void {
   updateMovementState(event.code, false);
 }
 
-function updateMovementState(code: string, value: boolean) {
+function updateMovementState(code: string, value: boolean): void {
   switch (code) {
     case 'ArrowUp':
     case 'KeyW':

@@ -27,7 +27,6 @@ export default class Bench {
       selectionHighlightMaterial,
     );
     this.selectionHighlight.rotation.x = -Math.PI / 2;
-    this.selectionHighlight.scale.set(3.5, 3.5, 3.5);
   }
 
   update(): void {
@@ -35,8 +34,13 @@ export default class Bench {
   }
 
   highlightBenchSegment(intersectLocation: THREE.Vector3): void {
-    // this method does nothing by default, needs to be overridden by children
+    // this method does nothing by default, needs to be overridden by inherited classes
     console.log(intersectLocation);
+  }
+
+  onBenchClick(intersectionLocation: THREE.Vector3): void {
+    // this method does nothing by default, needs to be override by inherited classses
+    console.log(intersectionLocation);
   }
 
   protected setObjectFromResources(resource: string): void {

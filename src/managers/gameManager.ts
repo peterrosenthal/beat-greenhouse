@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import * as SizesManager from './sizesManager';
 import * as EventManager from './eventManager/eventManager';
-import * as PlantGenerator from '../generators/plantGenerator/plantGenerator';
 import * as PlayerController from '../world/playerController/playerController';
 import * as Environment from '../world/environment';
 import * as Greenhouse from '../world/greenhouse/greenhouse';
@@ -46,10 +45,6 @@ export function init(): void {
   Grass.init();
 
   EventManager.addEventListener('update', update);
-
-  const plant = PlantGenerator.generatePlant();
-  plant.object.position.set(0, 1.2, 1.7);
-  scene.add(plant.object);
 }
 
 function update(): void {

@@ -15,7 +15,6 @@ const showbenchesParent = new THREE.Group();
 
 export function init(): void {
   const greenhouseModel = ResourceManager.items.greenhouseModel as GLTF;
-  const potModel = ResourceManager.items.potModel as GLTF;
 
   greenhouseModel.scene.traverse(function(object: THREE.Object3D) {
     if (object instanceof THREE.Mesh
@@ -43,14 +42,10 @@ export function init(): void {
 
   allBenches.push(...workbenches, ...showbenches);
 
-  const pot = potModel.scene.clone();
-  pot.position.set(0, 1.2, 1.7);
-
   GameManager.scene.add(
-    greenhouseModel.scene,
+    greenhouseModel.scene.clone(),
     workbenchesParent,
     showbenchesParent,
-    pot,
   );
 
   GameManager.updateAllMaterials();
