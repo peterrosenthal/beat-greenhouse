@@ -6,3 +6,5 @@ node_modules/
 **/*.afdesign
 
 **/*.blend?
+
+**/.DS_Store

@@ -44,6 +44,8 @@ export function init(): void {
   Greenhouse.init();
   Grass.init();
 
+  updateAllMaterials();
+
   EventManager.addEventListener('update', update);
 }
 

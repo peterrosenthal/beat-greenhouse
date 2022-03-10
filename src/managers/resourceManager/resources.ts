@@ -37,6 +37,21 @@ const resources: Resource[] = [
     type: ResourceType.TEXTURE,
     path: 'resources/textures/selection-highlight/alpha.png',
   },
+  {
+    name: 'genesisMachineModel',
+    type: ResourceType.GLTF_MODEL,
+    path: 'resources/models/genesis-machine/genesis-machine.gltf',
+  },
+  {
+    name: 'combinatorMachineModel',
+    type: ResourceType.GLTF_MODEL,
+    path: 'resources/models/combinator-machine/combinator-machine.gltf',
+  },
+  {
+    name: 'interpreterMachineModel',
+    type: ResourceType.GLTF_MODEL,
+    path: 'resources/models/interpreter-machine/interpreter-machine.gltf',
+  },
 ];
 
 export default resources;

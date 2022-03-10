@@ -2,9 +2,14 @@ import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as ResourceManager from '../../managers/resourceManager/resourceManager';
 import * as GameManager from '../../managers/gameManager';
+import * as GenesisMachine from './machines/genesisMachine';
+import * as CombinatorMachine from './machines/combinatorMachine';
+import * as InterpreterMachine from './machines/interpreterMachine';
 import Bench from './Bench';
 import Workbench from './Workbench';
 import Showbench from './ShowBench';
+
+export const object = new THREE.Group();
 
 export const workbenches: Workbench[] = [];
 export const showbenches: Showbench[] = [];
@@ -14,9 +19,9 @@ const workbenchesParent = new THREE.Group();
 const showbenchesParent = new THREE.Group();
 
 export function init(): void {
-  const greenhouseModel = ResourceManager.items.greenhouseModel as GLTF;
+  const greenhouseModel = (ResourceManager.items.greenhouseModel as GLTF).scene.clone();
 
-  greenhouseModel.scene.traverse(function(object: THREE.Object3D) {
+  greenhouseModel.traverse(function(object: THREE.Object3D) {
     if (object instanceof THREE.Mesh
      && object.material instanceof THREE.MeshStandardMaterial
      && object.material.name === 'window') {
@@ -24,8 +29,8 @@ export function init(): void {
     }
   });
 
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < ((i < 4) ? 3 : 1); j++) {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 3; j++) {
       workbenches.push(new Workbench(
         workbenchesParent,
         new THREE.Vector3(-16.4 + 6.7 * i, 0, j > 0 ? j > 1 ? 0.4 : 2.6 : 8.5),
@@ -42,13 +47,16 @@ export function init(): void {
 
   allBenches.push(...workbenches, ...showbenches);
 
-  GameManager.scene.add(
-    greenhouseModel.scene.clone(),
+  object.add(
+    greenhouseModel,
     workbenchesParent,
     showbenchesParent,
   );
+  GameManager.scene.add(object);
 
-  GameManager.updateAllMaterials();
+  GenesisMachine.init();
+  CombinatorMachine.init();
+  InterpreterMachine.init();
 }
 
 export function findBenchInList(objectsList: THREE.Object3D[]): Bench | undefined {
