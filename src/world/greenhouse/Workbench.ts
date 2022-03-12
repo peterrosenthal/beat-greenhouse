@@ -14,33 +14,24 @@ export default class Workbench extends Bench {
     
     this.selectionHighlight.scale.set(3.5, 3.5, 3.5);
 
-    this.plantsongs = [undefined, undefined, undefined];
+    this.plantsongs = [undefined, undefined];
   }
 
-  override highlightBenchSegment(intersectLocation: THREE.Vector3): void {
-    if (intersectLocation.x < -1.75) {
-      this.selectionHighlight.position.set(-3.5, 2.5, 0);
-    } else if (intersectLocation.x < 1.75) {
-      this.selectionHighlight.position.set(0, 2.5, 0);
-    } else {
-      this.selectionHighlight.position.set(3.5, 2.5, 0);
-    }
+  override onBenchHover(intersectLocation: THREE.Vector3): void {
+    this.selectionHighlight.position.set(intersectLocation.x < 0 ? -3 : 3, 2.5, 0);
     this.object.add(this.selectionHighlight);
   }
 
   override onBenchClick(intersectionLocation: THREE.Vector3): void {
-    const index = intersectionLocation.x < 1.75 ? intersectionLocation.x < -1.75 ?
-      0 : 1 : 2;
-    if (this.plantsongs[index] === undefined) {
+    const index = intersectionLocation.x < 0 ? 0 : 1;
+    const plantsong = this.plantsongs[index];
+    if (plantsong === undefined) {
       const latentSpaceVector = PlantGenerator.generateRandomLatentSpaceVector();
-      const position = intersectionLocation.x < 1.75 ? intersectionLocation.x < -1.75 ?
-        new THREE.Vector3(-3.5, 2.5, 0):
-        new THREE.Vector3(0, 2.5, 0):
-        new THREE.Vector3(3.5, 2.5, 0);
+      const position = new THREE.Vector3(intersectionLocation.x < 0 ? -3 : 3, 2.5, 0);
       this.object.localToWorld(position);
       this.plantsongs[index] = new Plantsong(latentSpaceVector, position);
     } else {
-      this.plantsongs[index]?.object.removeFromParent();
+      plantsong.object.removeFromParent();
       this.plantsongs[index] = undefined;
     }
   }

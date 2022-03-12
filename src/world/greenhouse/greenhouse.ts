@@ -7,7 +7,7 @@ import * as CombinatorMachine from './machines/combinatorMachine';
 import * as InterpreterMachine from './machines/interpreterMachine';
 import Bench from './Bench';
 import Workbench from './Workbench';
-import Showbench from './ShowBench';
+import Showbench from './Showbench';
 
 export const object = new THREE.Group();
 

@@ -107,7 +107,7 @@ export function update(): void {
   /* highlight the bench spot that the player is looking at */
   const [bench, intersectionLocal] = getClosestBenchIntersection();
   if (bench !== undefined && intersectionLocal !== undefined) {
-    bench.highlightBenchSegment(intersectionLocal);
+    bench.onBenchHover(intersectionLocal);
   }
 }
 

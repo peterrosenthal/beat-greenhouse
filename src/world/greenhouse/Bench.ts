@@ -33,7 +33,7 @@ export default class Bench {
     this.selectionHighlight.removeFromParent();
   }
 
-  highlightBenchSegment(intersectLocation: THREE.Vector3): void {
+  onBenchHover(intersectLocation: THREE.Vector3): void {
     // this method does nothing by default, needs to be overridden by inherited classes
     console.log(intersectLocation);
   }
