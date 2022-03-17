@@ -39,5 +39,8 @@
     "quotes": ["error", "single"],
     "semi": ["error", "always"],
     "space-in-parens": ["error", "never"]
+  },
+  "settings": {
+    "import/extensions": [".js", ".ts", ".glsl"]
   }
 }

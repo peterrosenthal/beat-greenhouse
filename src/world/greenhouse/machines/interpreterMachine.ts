@@ -12,3 +12,11 @@ export function init(): void {
 
   Greenhouse.object.add(object);
 }
+
+export function onMachineHover(intersection: THREE.Intersection): void {
+  // handle hover
+}
+
+export function onMachineClick(intersection: THREE.Intersection): void {
+  // handle click
+}

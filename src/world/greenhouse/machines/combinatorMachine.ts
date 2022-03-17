@@ -12,3 +12,22 @@ export function init(): void {
 
   Greenhouse.object.add(object);
 }
+
+export function onMachineHover(intersection: THREE.Intersection): void {
+  // first check if it's one of the levers
+  const intersectedObject = intersection.object;
+  if (intersectedObject !== object) {
+    if (intersectedObject.name === 'left_lever') {
+      console.log('left lever!');
+      return;
+    }
+    if (intersectedObject.name === 'right_lever') {
+      console.log('right lever!');
+      return;
+    }
+  }
+}
+
+export function onMachineClick(intersection: THREE.Intersection): void {
+  // handle click
+}

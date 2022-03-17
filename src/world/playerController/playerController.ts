@@ -4,6 +4,9 @@ import * as SizesManager from '../../managers/sizesManager';
 import * as TimeManager from '../../managers/timeManager';
 import * as GameManager from '../../managers/gameManager';
 import * as Greenhouse from '../greenhouse/greenhouse';
+import * as CombinatorMachine from '../greenhouse/machines/combinatorMachine';
+import * as GenesisMachine from '../greenhouse/machines/genesisMachine';
+import * as InterpreterMachine from '../greenhouse/machines/interpreterMachine';
 import MovementState from './MovementState';
 import Bench from '../greenhouse/Bench';
 
@@ -21,7 +24,7 @@ export const state: MovementState = {
 export const direction = new THREE.Vector3();
 export const velocity = new THREE.Vector3();
 
-export const camera = new THREE.PerspectiveCamera(55, SizesManager.aspectRatio, 0.01, 1000);
+export const camera = new THREE.PerspectiveCamera(55, SizesManager.aspectRatio, 0.001, 45);
 camera.position.set(10, 2.3, 0);
 
 const controls = new PointerLockControls(camera);
@@ -104,10 +107,14 @@ export function update(): void {
   controls.moveRight(velocity.x * delta);
   controls.moveForward(velocity.z * delta);
 
-  /* highlight the bench spot that the player is looking at */
-  const [bench, intersectionLocal] = getClosestBenchIntersection();
-  if (bench !== undefined && intersectionLocal !== undefined) {
-    bench.onBenchHover(intersectionLocal);
+  /* mouse intersection behavior */
+  raycaster.setFromCamera(new THREE.Vector2(), camera);
+  const intersections = raycaster.intersectObject(GameManager.scene, true);
+  if (!handleMachineIntersections(intersections, false)) {
+    const [bench, intersectionLocal] = getClosestBenchIntersection(intersections);
+    if (bench !== undefined && intersectionLocal !== undefined) {
+      bench.onBenchHover(intersectionLocal);
+    }
   }
 }
 
@@ -125,9 +132,77 @@ export function showMenu(): void {
   menu.style.display = 'block';
 }
 
-function getClosestBenchIntersection(): [Bench | undefined, THREE.Vector3 | undefined] {
-  raycaster.setFromCamera(new THREE.Vector2(), camera);
-  const intersections = raycaster.intersectObject(GameManager.scene, true);
+function handleMachineIntersections(
+  intersections: THREE.Intersection[],
+  click: boolean,
+): boolean {
+  for (let i = 0; i < intersections.length; i++) {
+    const intersection = intersections[i];
+    const object = intersection.object;
+
+    let objectIsCombinator = false;
+    if (object === CombinatorMachine.object) {
+      objectIsCombinator = true;
+    } else {
+      CombinatorMachine.object.traverse(function(child: THREE.Object3D) {
+        if (object === child) {
+          objectIsCombinator = true;
+        }
+      });
+    }
+    if (objectIsCombinator) {
+      if (click) {
+        CombinatorMachine.onMachineClick(intersection);
+      } else {
+        CombinatorMachine.onMachineHover(intersection);
+      }
+      return true;
+    }
+
+    let objectIsGenesis = false;
+    if (object === GenesisMachine.object) {
+      objectIsGenesis = true;
+    } else {
+      CombinatorMachine.object.traverse(function(child: THREE.Object3D) {
+        if (object === child) {
+          objectIsGenesis = true;
+        }
+      });
+    }
+    if (objectIsGenesis) {
+      if (click) {
+        GenesisMachine.onMachineClick(intersection);
+      } else {
+        GenesisMachine.onMachineHover(intersection);
+      }
+      return true;
+    }
+
+    let objectIsInterpreter = false;
+    if (object === InterpreterMachine.object) {
+      objectIsInterpreter = true;
+    } else {
+      CombinatorMachine.object.traverse(function(child: THREE.Object3D) {
+        if (object === child) {
+          objectIsInterpreter = true;
+        }
+      });
+    }
+    if (objectIsInterpreter) {
+      if (click) {
+        InterpreterMachine.onMachineClick(intersection);
+      } else {
+        InterpreterMachine.onMachineHover(intersection);
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+function getClosestBenchIntersection(
+  intersections: THREE.Intersection[],
+): [Bench | undefined, THREE.Vector3 | undefined] {
   let bench: Bench | undefined;
   let intersectionLocal: THREE.Vector3 | undefined;
   for (let i = 0; i < intersections.length; i++) {
@@ -160,10 +235,14 @@ function getClosestBenchIntersection(): [Bench | undefined, THREE.Vector3 | unde
 }
 
 function onMouseDown(): void {
-  const [bench, intersectionLocal] = getClosestBenchIntersection();
-  if (bench !== undefined && intersectionLocal !== undefined) {
-    bench.onBenchClick(intersectionLocal);
-  }
+  raycaster.setFromCamera(new THREE.Vector2(), camera);
+  const intersections = raycaster.intersectObject(GameManager.scene, true);
+  if (!handleMachineIntersections(intersections, true)) {
+    const [bench, intersectionLocal] = getClosestBenchIntersection(intersections);
+    if (bench !== undefined && intersectionLocal !== undefined) {
+      bench.onBenchClick(intersectionLocal);
+    }
+  } 
 }
 
 function onKeyDown(event: KeyboardEvent): void {
