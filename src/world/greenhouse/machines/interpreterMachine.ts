@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as GameManager from '../../../managers/gameManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
 import * as Greenhouse from '../greenhouse';
 
@@ -14,7 +15,11 @@ export function init(): void {
 }
 
 export function onMachineHover(intersection: THREE.Intersection): void {
-  // handle hover
+  const intersectedObject = intersection.object;
+  if (intersectedObject.name === 'play_button') {
+    GameManager.highlightedObjects.push(intersectedObject);
+    return;
+  }
 }
 
 export function onMachineClick(intersection: THREE.Intersection): void {

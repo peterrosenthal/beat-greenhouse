@@ -26,7 +26,8 @@ renderer.toneMapping = THREE.ReinhardToneMapping;
 renderer.toneMappingExposure = 1.5;
 
 // post-processing
-// const highlightedObjectsScene = new THREE.Scene();
+export const highlightedObjects: THREE.Object3D[] = [];
+export const highlightedObjectsScene = new THREE.Scene();
 const depthTextureRenderTarget = new THREE.WebGLRenderTarget(
   SizesManager.width,
   SizesManager.height,
@@ -69,7 +70,7 @@ edgeDetectHighlightPass.material.uniforms.u_normalsTexture.value =
 edgeDetectHighlightPass.material.uniforms.u_colorTexture.value =
   colorTextureRenderTarget.texture;
 edgeDetectHighlightPass.material.uniforms.u_color.value =
-  new THREE.Color(0x000000);
+  new THREE.Color(0xefffcf);
 composer.addPass(edgeDetectHighlightPass);
 const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
 composer.addPass(gammaCorrectionPass);
@@ -86,9 +87,6 @@ function resize(): void {
   depthTextureRenderTarget.setSize(SizesManager.width, SizesManager.height);
   normalsTextureRenderTarget.setSize(SizesManager.width, SizesManager.height);
   colorTextureRenderTarget.setSize(SizesManager.width, SizesManager.height);
-
-  edgeDetectHighlightPass.material.uniforms.u_textureWidth.value = SizesManager.width;
-  edgeDetectHighlightPass.material.uniforms.u_textureHeight.value = SizesManager.height;
 }
 
 EventManager.addEventListener('resize', resize);
@@ -119,18 +117,55 @@ function update(): void {
   PlayerController.update();
 
   // render depth, normal, and (pre-post-proccessed) color textures
-  scene.overrideMaterial = depthMaterial;
+  const originalParents: THREE.Object3D[] = [];
+  const originalPositions: THREE.Vector3[] = [];
+  const originalRotations: THREE.Quaternion[] = [];
+  const originalScales: THREE.Vector3[] = [];
+  for (let i = 0; i < highlightedObjects.length; i++) {
+    const object = highlightedObjects[i];
+    originalParents.push(object.parent ?? scene);
+    originalPositions.push(object.position.clone());
+    originalRotations.push(object.quaternion.clone());
+    originalScales.push(object.scale.clone());
+    const worldPosition = new THREE.Vector3();
+    object.getWorldPosition(worldPosition);
+    const worldRotation = new THREE.Quaternion();
+    object.getWorldQuaternion(worldRotation);
+    const worldScale = new THREE.Vector3();
+    object.getWorldScale(worldScale);
+    object.position.copy(worldPosition);
+    object.quaternion.copy(worldRotation);
+    object.scale.copy(worldScale);
+    highlightedObjectsScene.add(object);
+  }
+  highlightedObjectsScene.add(PlayerController.camera);
+  highlightedObjectsScene.add(Environment.directionalLight);
+  highlightedObjectsScene.overrideMaterial = depthMaterial;
   renderer.setRenderTarget(depthTextureRenderTarget);
   renderer.clear();
-  renderer.render(scene, PlayerController.camera);
-  scene.overrideMaterial = normalsMaterial;
+  renderer.render(highlightedObjectsScene, PlayerController.camera);
+  highlightedObjectsScene.overrideMaterial = normalsMaterial;
   renderer.setRenderTarget(normalsTextureRenderTarget);
-  renderer.render(scene, PlayerController.camera);
-  scene.overrideMaterial = null;
+  renderer.render(highlightedObjectsScene, PlayerController.camera);
+  highlightedObjectsScene.overrideMaterial = null;
   renderer.setRenderTarget(colorTextureRenderTarget);
-  renderer.render(scene, PlayerController.camera);
+  renderer.render(highlightedObjectsScene, PlayerController.camera);
   renderer.setRenderTarget(null);
   renderer.clear();
+  for (let i = 0; i < highlightedObjects.length; i++) {
+    const object = highlightedObjects[i];
+    object.position.copy(originalPositions[i]);
+    object.quaternion.copy(originalRotations[i]);
+    object.scale.copy(originalScales[i]);
+    originalParents[i].add(object);
+  }
+  scene.add(PlayerController.camera);
+  scene.add(Environment.directionalLight);
+  // clear the list of highlighted objects
+  // (it will get filled again before next update cycle if we need)
+  while (highlightedObjects.length > 0) {
+    highlightedObjects.pop();
+  }
 
   // render effects composer
   composer.render();

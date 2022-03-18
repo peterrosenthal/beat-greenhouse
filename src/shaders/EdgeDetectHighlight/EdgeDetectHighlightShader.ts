@@ -8,7 +8,7 @@ export default {
     u_depthTexture: { value: null },
     u_normalsTexture: { value: null },
     u_colorTexture: { value: null },
-    u_sampleSize: { value: 0.0004 },
+    u_sampleSize: { value: 0.001 },
     u_color: { value: null },
   },
   vertexShader,

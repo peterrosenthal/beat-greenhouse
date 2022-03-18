@@ -163,7 +163,7 @@ function handleMachineIntersections(
     if (object === GenesisMachine.object) {
       objectIsGenesis = true;
     } else {
-      CombinatorMachine.object.traverse(function(child: THREE.Object3D) {
+      GenesisMachine.object.traverse(function(child: THREE.Object3D) {
         if (object === child) {
           objectIsGenesis = true;
         }
@@ -182,7 +182,7 @@ function handleMachineIntersections(
     if (object === InterpreterMachine.object) {
       objectIsInterpreter = true;
     } else {
-      CombinatorMachine.object.traverse(function(child: THREE.Object3D) {
+      InterpreterMachine.object.traverse(function(child: THREE.Object3D) {
         if (object === child) {
           objectIsInterpreter = true;
         }

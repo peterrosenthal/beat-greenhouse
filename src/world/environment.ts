@@ -15,5 +15,6 @@ export function init(): void {
   environment.encoding = THREE.sRGBEncoding;
   GameManager.scene.background = environment;
   GameManager.scene.environment = environment;
+  GameManager.highlightedObjectsScene.environment = environment;
   GameManager.updateAllMaterials();
 }

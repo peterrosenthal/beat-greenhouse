@@ -24,7 +24,7 @@ float detectEdge(sampler2D sampleTexture) {
 
   float edge = sqrt(dot(horizontal, horizontal) + dot(horizontal, vertical));
 
-  return clamp(step(0.375, edge) * 0.05 + step(0.7, edge), 0.0, 1.0);
+  return clamp(step(0.15, edge) * 0.05 + step(0.4, edge), 0.0, 1.0);
 }
 
 void main() {

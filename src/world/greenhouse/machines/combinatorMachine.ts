@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as GameManager from '../../../managers/gameManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
 import * as Greenhouse from '../greenhouse';
 
@@ -16,15 +17,10 @@ export function init(): void {
 export function onMachineHover(intersection: THREE.Intersection): void {
   // first check if it's one of the levers
   const intersectedObject = intersection.object;
-  if (intersectedObject !== object) {
-    if (intersectedObject.name === 'left_lever') {
-      console.log('left lever!');
-      return;
-    }
-    if (intersectedObject.name === 'right_lever') {
-      console.log('right lever!');
-      return;
-    }
+  if (intersectedObject.name === 'left_lever' ||
+      intersectedObject.name === 'right_lever') {
+    GameManager.highlightedObjects.push(intersectedObject);
+    return;
   }
 }
 
