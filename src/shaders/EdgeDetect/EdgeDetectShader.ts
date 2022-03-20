@@ -4,11 +4,13 @@ import fragmentShader from './fragment.glsl';
 
 export default {
   uniforms: {
-    tDiffuse: { value: null },
+    u_incomingTexture: { value: null },
     u_depthTexture: { value: null },
     u_normalsTexture: { value: null },
     u_colorTexture: { value: null },
     u_sampleSize: { value: 0.001 },
+    u_lowerCutoff: { value: null },
+    u_upperCutoff: { value: null },
     u_color: { value: null },
   },
   vertexShader,

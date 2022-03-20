@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as GameManager from '../managers/gameManager';
+import * as RenderManager from '../managers/renderManager';
 import * as ResourceManager from '../managers/resourceManager/resourceManager';
 
 export const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
@@ -10,11 +11,11 @@ export function init(): void {
 
   const texture = ResourceManager.items.skyboxTexture as THREE.Texture;
   const target = new THREE.WebGLCubeRenderTarget(texture.image.height);
-  target.fromEquirectangularTexture(GameManager.renderer, texture);
+  target.fromEquirectangularTexture(RenderManager.renderer, texture);
   const environment: THREE.CubeTexture = target.texture;
   environment.encoding = THREE.sRGBEncoding;
   GameManager.scene.background = environment;
   GameManager.scene.environment = environment;
-  GameManager.highlightedObjectsScene.environment = environment;
+  GameManager.highlightedScene.environment = environment;
   GameManager.updateAllMaterials();
 }

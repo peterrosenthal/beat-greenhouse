@@ -1,8 +1,10 @@
-uniform sampler2D tDiffuse;
+uniform sampler2D u_incomingTexture;
 uniform sampler2D u_depthTexture;
 uniform sampler2D u_normalsTexture;
 uniform sampler2D u_colorTexture;
 uniform float u_sampleSize;
+uniform float u_lowerCutoff;
+uniform float u_upperCutoff;
 uniform vec3 u_color;
 
 varying vec2 v_uv;
@@ -24,7 +26,7 @@ float detectEdge(sampler2D sampleTexture) {
 
   float edge = sqrt(dot(horizontal, horizontal) + dot(horizontal, vertical));
 
-  return clamp(step(0.15, edge) * 0.05 + step(0.4, edge), 0.0, 1.0);
+  return clamp(step(u_lowerCutoff, edge) * 0.05 + step(u_upperCutoff, edge), 0.0, 1.0);
 }
 
 void main() {
@@ -33,7 +35,7 @@ void main() {
   float colorEdge = detectEdge(u_colorTexture);
   float edge = clamp(depthEdge + normalEdge + colorEdge, 0.0, 1.0);
 
-  vec3 color = texture2D(tDiffuse, v_uv).xyz - edge;
+  vec3 color = texture2D(u_incomingTexture, v_uv).xyz - edge;
   color += u_color * edge;
 
   gl_FragColor = vec4(color, 1.0);

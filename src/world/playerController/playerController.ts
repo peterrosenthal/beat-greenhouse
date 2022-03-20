@@ -3,6 +3,7 @@ import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockCont
 import * as SizesManager from '../../managers/sizesManager';
 import * as TimeManager from '../../managers/timeManager';
 import * as GameManager from '../../managers/gameManager';
+import * as RenderManager from '../../managers/renderManager';
 import * as Greenhouse from '../greenhouse/greenhouse';
 import * as CombinatorMachine from '../greenhouse/machines/combinatorMachine';
 import * as GenesisMachine from '../greenhouse/machines/genesisMachine';
@@ -24,7 +25,12 @@ export const state: MovementState = {
 export const direction = new THREE.Vector3();
 export const velocity = new THREE.Vector3();
 
-export const camera = new THREE.PerspectiveCamera(55, SizesManager.aspectRatio, 0.001, 45);
+export const camera = new THREE.PerspectiveCamera(
+  45,
+  SizesManager.aspectRatio,
+  0.45,
+  45
+);
 camera.position.set(10, 2.3, 0);
 
 const controls = new PointerLockControls(camera);
@@ -53,10 +59,12 @@ pointer.innerText = '.';
 document.body.appendChild(menu);
 document.body.appendChild(pointer);
 
+let overrideMenu = false;
+
 export function init(): void {
   GameManager.scene.add(camera);
 
-  controls.domElement = GameManager.canvas;
+  controls.domElement = RenderManager.canvas;
   controls.connect();
   GameManager.scene.add(controls.getObject());
 
@@ -122,12 +130,23 @@ export function lockControls(): void {
   controls.lock();
 }
 
+export function unlockControls(showMenu = false): void {
+  controls.unlock();
+  if (!showMenu) {
+    overrideMenu = true;
+  }
+}
+
 export function hideMenu(): void {
+  overrideMenu = false;
   menu.style.display = 'none';
   pointer.style.display = 'block';
 }
 
 export function showMenu(): void {
+  if (overrideMenu) {
+    return;
+  }
   pointer.style.display = 'none';
   menu.style.display = 'block';
 }
@@ -251,6 +270,9 @@ function onKeyDown(event: KeyboardEvent): void {
 
 function onKeyUp(event: KeyboardEvent): void {
   updateMovementState(event.code, false);
+  if (event.code === 'Escape') {
+    controls.lock();
+  }
 }
 
 function updateMovementState(code: string, value: boolean): void {

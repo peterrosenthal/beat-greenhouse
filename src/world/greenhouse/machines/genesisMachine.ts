@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as GameManager from '../../../managers/gameManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
+import * as PlayerController from '../../playerController/playerController';
 import * as Greenhouse from '../greenhouse';
 
 export let object = new THREE.Group();
@@ -27,5 +28,8 @@ export function onMachineHover(intersection: THREE.Intersection): void {
 }
 
 export function onMachineClick(intersection: THREE.Intersection): void {
-  // handle click
+  if (intersection.object.name.includes('computer')) {
+    // launch import dialog
+    PlayerController.unlockControls();
+  }
 }
