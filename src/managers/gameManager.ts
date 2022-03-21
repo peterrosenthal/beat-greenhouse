@@ -74,8 +74,6 @@ function update(): void {
   while (highlightedObjects.length > 0) {
     highlightedObjects.pop();
   }
-
-  console.log('update!');
 }
 
 export function play(): void {
