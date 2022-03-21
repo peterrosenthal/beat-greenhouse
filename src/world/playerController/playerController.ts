@@ -127,17 +127,22 @@ export function update(): void {
 }
 
 export function lockControls(): void {
+  if (controls.isLocked) {
+    return;
+  }
   controls.lock();
 }
 
 export function unlockControls(showMenu = false): void {
   controls.unlock();
+  GameManager.pause();
   if (!showMenu) {
     overrideMenu = true;
   }
 }
 
 export function hideMenu(): void {
+  GameManager.play();
   overrideMenu = false;
   menu.style.display = 'none';
   pointer.style.display = 'block';
@@ -147,6 +152,7 @@ export function showMenu(): void {
   if (overrideMenu) {
     return;
   }
+  GameManager.pause();
   pointer.style.display = 'none';
   menu.style.display = 'block';
 }
@@ -271,7 +277,7 @@ function onKeyDown(event: KeyboardEvent): void {
 function onKeyUp(event: KeyboardEvent): void {
   updateMovementState(event.code, false);
   if (event.code === 'Escape') {
-    controls.lock();
+    lockControls();
   }
 }
 

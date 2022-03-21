@@ -6,6 +6,8 @@ import * as Environment from '../world/environment';
 import * as Greenhouse from '../world/greenhouse/greenhouse';
 import * as Grass from '../world/grass';
 
+export let isPlaying = false;
+
 export const scene = new THREE.Scene();
 
 // post-processing
@@ -40,8 +42,6 @@ export function init(): void {
   highlightedScene.add(Environment.directionalLight.clone());
 
   updateAllMaterials();
-
-  EventManager.addEventListener('update', update);
 }
 
 function update(): void {
@@ -74,4 +74,22 @@ function update(): void {
   while (highlightedObjects.length > 0) {
     highlightedObjects.pop();
   }
+
+  console.log('update!');
+}
+
+export function play(): void {
+  if (isPlaying) {
+    return;
+  }
+  EventManager.addEventListener('update', update);
+  isPlaying = true;
+}
+
+export function pause(): void {
+  if (!isPlaying) {
+    return;
+  }
+  EventManager.removeEventListener('update', update);
+  isPlaying = false;
 }

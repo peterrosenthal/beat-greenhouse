@@ -145,49 +145,63 @@ export function resize(): void {
 
   composer.setSize(SizesManager.width, SizesManager.height);
   composer.setPixelRatio(SizesManager.pixelRatio);
+
+  const effectiveWidth = SizesManager.width * SizesManager.pixelRatio;
+  const effectiveHeight = SizesManager.height * SizesManager.pixelRatio;
+
+  renderTargets.fullScene.depth.setSize(effectiveWidth, effectiveHeight);
+  renderTargets.fullScene.normals.setSize(effectiveWidth, effectiveHeight);
+  renderTargets.fullScene.color.setSize(effectiveWidth, effectiveHeight);
+
+  renderTargets.highlights.depth.setSize(effectiveWidth, effectiveHeight);
+  renderTargets.highlights.normals.setSize(effectiveWidth, effectiveHeight);
+  renderTargets.highlights.color.setSize(effectiveWidth, effectiveHeight);
+
+  render();
 }
 
 export function render(): void {
-  if (postprocessing) {
-    renderer.setRenderTarget(renderTargets.fullScene.depth);
-    GameManager.scene.overrideMaterial = depthMaterial;
-    renderer.clear();
+  if (!postprocessing) {
     renderer.render(GameManager.scene, PlayerController.camera);
-
-    renderer.setRenderTarget(renderTargets.fullScene.normals);
-    GameManager.scene.overrideMaterial = normalsMaterial;
-    renderer.clear();
-    renderer.render(GameManager.scene, PlayerController.camera);
-
-    renderer.setRenderTarget(renderTargets.fullScene.color);
-    GameManager.scene.overrideMaterial = null;
-    renderer.clear();
-    renderer.render(GameManager.scene, PlayerController.camera);
-
-    GameManager.highlightedScene.add(PlayerController.camera);
-
-    renderer.setRenderTarget(renderTargets.highlights.depth);
-    GameManager.highlightedScene.overrideMaterial = depthMaterial;
-    renderer.clear();
-    renderer.render(GameManager.highlightedScene, PlayerController.camera);
-
-    renderer.setRenderTarget(renderTargets.highlights.normals);
-    GameManager.highlightedScene.overrideMaterial = normalsMaterial;
-    renderer.clear();
-    renderer.render(GameManager.highlightedScene, PlayerController.camera);
-
-    renderer.setRenderTarget(renderTargets.highlights.color);
-    GameManager.highlightedScene.overrideMaterial = null;
-    renderer.clear();
-    renderer.render(GameManager.highlightedScene, PlayerController.camera);
-
-    GameManager.scene.add(PlayerController.camera);
-
-    renderer.setRenderTarget(null);
-    renderer.clear();
-
-    composer.render(TimeManager.delta);
-  } else {
-    renderer.render(GameManager.scene, PlayerController.camera);
+    return;
   }
+
+  renderer.setRenderTarget(renderTargets.fullScene.depth);
+  GameManager.scene.overrideMaterial = depthMaterial;
+  renderer.clear();
+  renderer.render(GameManager.scene, PlayerController.camera);
+
+  renderer.setRenderTarget(renderTargets.fullScene.normals);
+  GameManager.scene.overrideMaterial = normalsMaterial;
+  renderer.clear();
+  renderer.render(GameManager.scene, PlayerController.camera);
+
+  renderer.setRenderTarget(renderTargets.fullScene.color);
+  GameManager.scene.overrideMaterial = null;
+  renderer.clear();
+  renderer.render(GameManager.scene, PlayerController.camera);
+
+  GameManager.highlightedScene.add(PlayerController.camera);
+
+  renderer.setRenderTarget(renderTargets.highlights.depth);
+  GameManager.highlightedScene.overrideMaterial = depthMaterial;
+  renderer.clear();
+  renderer.render(GameManager.highlightedScene, PlayerController.camera);
+
+  renderer.setRenderTarget(renderTargets.highlights.normals);
+  GameManager.highlightedScene.overrideMaterial = normalsMaterial;
+  renderer.clear();
+  renderer.render(GameManager.highlightedScene, PlayerController.camera);
+
+  renderer.setRenderTarget(renderTargets.highlights.color);
+  GameManager.highlightedScene.overrideMaterial = null;
+  renderer.clear();
+  renderer.render(GameManager.highlightedScene, PlayerController.camera);
+
+  GameManager.scene.add(PlayerController.camera);
+
+  renderer.setRenderTarget(null);
+  renderer.clear();
+
+  composer.render(TimeManager.delta);
 }
