@@ -33,7 +33,7 @@ export const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(10, 2.3, 0);
 
-const controls = new PointerLockControls(camera);
+let controls!: PointerLockControls;
 const raycaster = new THREE.Raycaster();
 
 const title = document.createElement('h1');
@@ -52,16 +52,18 @@ export const menu = document.createElement('div');
 menu.classList.add('pause-menu');
 menu.appendChild(content);
 
-export const pointer = document.createElement('div');
-pointer.classList.add('pointer');
-pointer.innerText = '.';
+export const crosshair = document.createElement('div');
+crosshair.classList.add('crosshair');
+crosshair.innerText = '.';
 
 document.body.appendChild(menu);
-document.body.appendChild(pointer);
+document.body.appendChild(crosshair);
 
 let overrideMenu = false;
 
 export function init(): void {
+  controls = new PointerLockControls(camera, RenderManager.canvas);
+
   GameManager.scene.add(camera);
 
   controls.domElement = RenderManager.canvas;
@@ -70,6 +72,7 @@ export function init(): void {
 
   menu.addEventListener('click', lockControls);
   controls.addEventListener('lock', hideMenu);
+  controls.addEventListener('lock', GenesisMachine.hideImportMenu);
   controls.addEventListener('unlock', showMenu);
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
@@ -145,7 +148,7 @@ export function hideMenu(): void {
   GameManager.play();
   overrideMenu = false;
   menu.style.display = 'none';
-  pointer.style.display = 'block';
+  showCrosshair();
 }
 
 export function showMenu(): void {
@@ -153,8 +156,16 @@ export function showMenu(): void {
     return;
   }
   GameManager.pause();
-  pointer.style.display = 'none';
   menu.style.display = 'block';
+  hideCrosshair();
+}
+
+export function showCrosshair(): void {
+  crosshair.style.display = 'block';
+}
+
+export function hideCrosshair(): void {
+  crosshair.style.display = 'none';
 }
 
 function handleMachineIntersections(

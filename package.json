@@ -20,6 +20,7 @@
   "homepage": "https://gitlab.com/peterrosenthal/beat-greenhouse#readme",
   "dependencies": {
     "@magenta/music": "^1.23.1",
+    "@tensorflow/tfjs": "^2.7.0",
     "@types/three": "^0.138.0",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",

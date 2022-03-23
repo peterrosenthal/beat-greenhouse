@@ -4,10 +4,10 @@ import * as GameManager from '../../../managers/gameManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
 import * as Greenhouse from '../greenhouse';
 
-export let object = new THREE.Group();
+export const object = new THREE.Group();
 
 export function init(): void {
-  object = (ResourceManager.items.combinatorMachineModel as GLTF).scene.clone();
+  object.copy((ResourceManager.items.combinatorMachineModel as GLTF).scene);
   object.position.set(18, 0, 1);
   object.rotation.y = -Math.PI / 2;
 

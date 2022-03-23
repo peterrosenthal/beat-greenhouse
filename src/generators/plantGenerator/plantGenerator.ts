@@ -6,7 +6,7 @@ import Plant from './Plant';
 
 const simplex = new SimplexNoise('Beat Greenhouse');
 
-export function generatePlant(parameters: PlantParameters): Plant {
+export async function generatePlant(parameters: PlantParameters): Promise<Plant> {
   // step 1: generate attraction points
   const attractors = generateInitialAttractors(parameters);
 
@@ -84,7 +84,7 @@ export function getDefaultParameters(): PlantParameters {
 
 export function getRandomParameters(): PlantParameters {
   const latentSpaceVector = generateRandomLatentSpaceVector();
-  return getParametersFromLatentSpaceVector(latentSpaceVector);
+  return getParametersFromEncoding(latentSpaceVector);
 }
 
 
@@ -102,93 +102,92 @@ export function generateRandomLatentSpaceVector(): Float32Array {
   return latentSpaceVector;
 }
 
-export function getParametersFromLatentSpaceVector(
-  latentSpaceVector: Float32Array): PlantParameters {
-  // step 1: reduce vector into however many dimensions we can actually make use of
+export function getParametersFromEncoding(encoding: Float32Array): PlantParameters {
+  // step 1: reduce encoding into however many dimensions we can actually make use of
   // currently that number of dimensions is... 36... I think
-  const reducedDimensions = 36;
-  const reducedVector = new Float32Array(reducedDimensions);
-  for (let i = 0; i < latentSpaceVector.length; i++) {
-    const power = Math.ceil((i + 1) / reducedDimensions);
-    reducedVector[i % reducedDimensions] += Math.pow(latentSpaceVector[i], power);
+  const dimensions = 36;
+  const reduced = new Float32Array(dimensions);
+  for (let i = 0; i < encoding.length; i++) {
+    const power = Math.ceil((i + 1) / dimensions);
+    reduced[i % dimensions] += Math.pow(encoding[i], power);
   }
   // normalize the reduced vector
   let length = 0;
-  for (let i = 0; i < reducedDimensions; i++) {
-    length += reducedVector[i] * reducedVector[i];
+  for (let i = 0; i < dimensions; i++) {
+    length += reduced[i] * reduced[i];
   }
   length = Math.sqrt(length);
-  for (let i = 0; i < reducedDimensions; i++) {
-    reducedVector[i] /= length;
+  for (let i = 0; i < dimensions; i++) {
+    reduced[i] /= length;
   }
 
   // create a set of parameters out of the reduced vector
   return {
     envelope: {
-      size: (reducedVector[0] + 1) * 6,
+      size: (reduced[0] + 1) * 6,
       position: new THREE.Vector3(
-        reducedVector[1] * 4,
-        reducedVector[2] * 0.4 + 0.4,
-        reducedVector[3] * 4,
+        reduced[1] * 4,
+        reduced[2] * 0.4 + 0.4,
+        reduced[3] * 4,
       ),
       handles: {
         bot: {
-          first: reducedVector[4] * 0.3 + 0.3,
-          second: reducedVector[5] * 0.3 + 0.3,
-          third: reducedVector[6] * 0.3 + 0.3,
+          first: reduced[4] * 0.3 + 0.3,
+          second: reduced[5] * 0.3 + 0.3,
+          third: reduced[6] * 0.3 + 0.3,
         },
         mid: {
-          first: reducedVector[7] * 0.35 + 0.5,
-          second: reducedVector[8] * 0.35 + 0.5,
-          third: reducedVector[9] * 0.35 + 0.5,
+          first: reduced[7] * 0.35 + 0.5,
+          second: reduced[8] * 0.35 + 0.5,
+          third: reduced[9] * 0.35 + 0.5,
         },
         top: {
-          first: reducedVector[10] * 0.5 + 0.5,
-          second: reducedVector[11] * 0.5 + 0.5,
-          third: reducedVector[12] * 0.5 + 0.5,
+          first: reduced[10] * 0.5 + 0.5,
+          second: reduced[11] * 0.5 + 0.5,
+          third: reduced[12] * 0.5 + 0.5,
         },
         heights: {
-          bot: reducedVector[13] * 0.09 + 0.12,
-          mid: reducedVector[14] * 0.21 + 0.54,
-          top: reducedVector[15] * 0.04 + 0.95,
+          bot: reduced[13] * 0.09 + 0.12,
+          mid: reduced[14] * 0.21 + 0.54,
+          top: reduced[15] * 0.04 + 0.95,
         },
       },
     },
     attraction: {
       noise: {
         offset: new THREE.Vector3(
-          reducedVector[16] * 10,
-          reducedVector[17] * 10,
-          reducedVector[18] * 10,
+          reduced[16] * 10,
+          reduced[17] * 10,
+          reduced[18] * 10,
         ),
-        scale: reducedVector[19] * 0.5 + 5,
+        scale: reduced[19] * 0.5 + 5,
         threshold: {
-          value: reducedVector[20] * 0.08 + 0.89,
+          value: reduced[20] * 0.08 + 0.89,
           skew: {
-            location: reducedVector[21] * 0.5 + 0.5,
-            amount: Math.abs(reducedVector[22]),
+            location: reduced[21] * 0.5 + 0.5,
+            amount: Math.abs(reduced[22]),
           },
         },
       },
-      radius: reducedVector[23] * 2.5 + 3,
-      kill: (reducedVector[23] * 2.5 + 3) * (reducedVector[24] * 0.5 + 0.5),
+      radius: reduced[23] * 2.5 + 3,
+      kill: (reduced[23] * 2.5 + 3) * (reduced[24] * 0.5 + 0.5),
     },
     growth: {
-      iterations: Math.round(reducedVector[25] * 40 + 70),
-      reach: reducedVector[26] * 0.2 + 0.25,
+      iterations: Math.round(reduced[25] * 40 + 70),
+      reach: reduced[26] * 0.2 + 0.25,
       thickness: {
-        fast: reducedVector[27] * 0.0025 + 0.005,
-        slow: reducedVector[28] * 0.00005 + 0.0002,
-        combination: reducedVector[29] + 3,
+        fast: reduced[27] * 0.0025 + 0.005,
+        slow: reduced[28] * 0.00005 + 0.0002,
+        combination: reduced[29] + 3,
       },
     },
     leaves: {
-      maxBranchThickness: reducedVector[30] * 0.012 + 0.011,
-      size: reducedVector[31] * 0.2 + 0.2,
-      theta: (reducedVector[32] * 3 * Math.PI + Math.PI) % (Math.PI * 2),
-      phiAverage: reducedVector[33] * Math.PI + Math.PI,
-      phiRandomness: reducedVector[34] * 0.1 + 0.1,
-      verticalDensity: reducedVector[35] * 1.2 + 1.5,
+      maxBranchThickness: reduced[30] * 0.012 + 0.011,
+      size: reduced[31] * 0.2 + 0.2,
+      theta: (reduced[32] * 3 * Math.PI + Math.PI) % (Math.PI * 2),
+      phiAverage: reduced[33] * Math.PI + Math.PI,
+      phiRandomness: reduced[34] * 0.1 + 0.1,
+      verticalDensity: reduced[35] * 1.2 + 1.5,
     },
   };
 }
