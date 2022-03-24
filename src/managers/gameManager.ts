@@ -42,6 +42,8 @@ export function init(): void {
   highlightedScene.add(Environment.directionalLight.clone());
 
   updateAllMaterials();
+
+  RenderManager.render();
 }
 
 function update(): void {

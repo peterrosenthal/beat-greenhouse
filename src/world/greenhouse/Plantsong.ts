@@ -57,9 +57,9 @@ export default class Plantsong {
   }
 
   public dispose(): void {
-    // TODO: this isn't actually disposing anything yet, I need to implement a real
-    // dispose method sometime soon for performance
     this.object.removeFromParent();
+    this.plant?.dispose();
+    Greenhouse.filterPlantsongs(this);
   }
 
   private setPlant(plant: Plant) {

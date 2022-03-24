@@ -16,7 +16,7 @@ export const workbenches: Workbench[] = [];
 export const showbenches: Showbench[] = [];
 export const allBenches: Bench[] = [];
 
-export const plantsongs: Plantsong[] = [];
+export let plantsongs: Plantsong[] = [];
 
 const workbenchesParent = new THREE.Group();
 const showbenchesParent = new THREE.Group();
@@ -105,6 +105,11 @@ export function findPlantsong(object: THREE.Object3D): Plantsong | undefined {
     }
   }
   return undefined;
+}
+
+export function filterPlantsongs(plantsong: Plantsong): void {
+  plantsongs = plantsongs.filter(function(plant: Plantsong) { return plant !== plantsong; });
+  console.log(plantsongs.length);
 }
 
 export function findBench(object: THREE.Object3D): Bench | undefined {

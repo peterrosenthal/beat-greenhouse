@@ -1,5 +1,5 @@
 import * as mm from '@magenta/music/es6';
-import { min, tensor2d } from '@tensorflow/tfjs';
+import { tensor2d } from '@tensorflow/tfjs';
 import MusicParameters from './musicParameters';
 
 export const parameters = getDefaultParameters();

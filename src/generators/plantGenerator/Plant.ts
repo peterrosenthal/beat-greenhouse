@@ -89,4 +89,20 @@ export default class Plant {
       }
     }
   }
+
+  public dispose(): void {
+    this.object.removeFromParent();
+    this.object.traverse(function(child: THREE.Object3D) {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.dispose();
+        if (child.material instanceof THREE.Material) {
+          child.material.dispose();
+        } else {
+          for (const material of child.material) {
+            material.dispose();
+          }
+        }
+      }
+    });
+  }
 }

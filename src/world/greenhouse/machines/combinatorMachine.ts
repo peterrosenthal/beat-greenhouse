@@ -47,7 +47,7 @@ export function update(): void {
     if (intersections.length > 0) {
       const point = activeLever.worldToLocal(intersections[0].point.clone());
       activeLever.position.y = THREE.MathUtils.clamp(
-        activeLever.position.y + point.y / 800,
+        activeLever.position.y + point.y / 400,
         1.6,
         2.45,
       );
@@ -150,6 +150,14 @@ async function cobmine(): Promise<void> {
   // set the combining flag to true to trigger animations
   combining = true;
 
+  // clear out all the workbenches in the greenhouse
+  for (const bench of Greenhouse.workbenches) {
+    bench.plantsongs[0]?.dispose();
+    bench.plantsongs[1]?.dispose();
+    bench.plantsongs[0] = undefined;
+    bench.plantsongs[1] = undefined;
+  }
+
   // set the balance parameter of the music generator based on the levers
   const leftLeverAmount = (leftLever.position.y - 1.6) / 0.85;
   const rightLeverAmount = (rightLever.position.y - 1.6) / 0.85;
@@ -163,12 +171,6 @@ async function cobmine(): Promise<void> {
 
   // combine the sequences with the music generator
   const sequences = await MusicGenerator.combine(sequenceA, sequenceB);
-
-  // clear out all the workbenches in the greenhouse
-  for (const bench of Greenhouse.workbenches) {
-    bench.plantsongs[0]?.dispose();
-    bench.plantsongs[1]?.dispose();
-  }
 
   // find a random bench to put a plant on, encode the sequence,
   // create a plant out of the encoding, and rinse and repeat
@@ -185,6 +187,7 @@ async function cobmine(): Promise<void> {
     const position = new THREE.Vector3(indexOnBench === 0 ? -3 : 3, 2.5, 0);
     Greenhouse.workbenches[indexOfBench].object.localToWorld(position);
     const plantsong = new Plantsong(encoding, position);
+    Greenhouse.plantsongs.push(plantsong);
     Greenhouse.workbenches[indexOfBench].plantsongs[indexOnBench] = plantsong;
   }
 

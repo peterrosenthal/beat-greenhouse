@@ -104,14 +104,23 @@ export function update(): void {
   if (state.forward || state.backward) {
     velocity.z += direction.z * acceleration * delta;
   } else {
+    const sign = Math.sign(velocity.z);
     velocity.z -= velocity.z * deacceleration * delta;
+    // eliminate bouncing
+    if (Math.sign(velocity.z) !== sign) {
+      velocity.z = 0;
+    }
   }
 
   // update x velocity
   if (state.left || state.right) {
     velocity.x += direction.x * acceleration * delta;
   } else {
+    const sign = Math.sign(velocity.x);
     velocity.x -= velocity.x * deacceleration * delta;
+    if (Math.sign(velocity.x) !== sign) {
+      velocity.x = 0;
+    }
   }
 
   // cannot exceed max speed
