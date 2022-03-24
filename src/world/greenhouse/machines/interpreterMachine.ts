@@ -70,7 +70,6 @@ export function setPlantsong(plant: Plantsong | undefined): void {
 }
 
 async function playPlantsong(): Promise<void> {
-  console.log('play plant song!');
   if (player.isPlaying()) {
     player.stop();
   }

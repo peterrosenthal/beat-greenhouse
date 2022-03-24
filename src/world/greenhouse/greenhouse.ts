@@ -86,9 +86,7 @@ export function findBenchInList(objectsList: THREE.Object3D[]): Bench | undefine
 }
 
 export function update(): void {
-  for (const bench of allBenches) {
-    bench.update();
-  }
+  CombinatorMachine.update();
 }
 
 export function findPlantsong(object: THREE.Object3D): Plantsong | undefined {

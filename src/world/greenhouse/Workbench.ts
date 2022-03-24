@@ -19,7 +19,7 @@ export default class Workbench extends Bench {
     const index = intersectionLocal.x < 0 ? 0 : 1;
     if (this.plantsongs[index] instanceof Plantsong) {
       this.plantsongs[index]?.highlight();
-    } else {
+    } else if (PlayerController.plantsong instanceof Plantsong) {
       GameManager.highlightedObjects.push(this.object);
     }
   }

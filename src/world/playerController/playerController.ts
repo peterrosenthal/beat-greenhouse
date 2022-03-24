@@ -35,7 +35,7 @@ export const camera = new THREE.PerspectiveCamera(
 camera.position.set(10, 2.3, 0);
 
 let controls!: PointerLockControls;
-const raycaster = new THREE.Raycaster();
+export const raycaster = new THREE.Raycaster();
 
 const title = document.createElement('h1');
 title.innerText = 'Beat Greenhouse';

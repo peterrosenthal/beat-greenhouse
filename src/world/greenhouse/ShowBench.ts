@@ -21,7 +21,7 @@ export default class Showbench extends Bench {
     index += intersectionLocal.z < -1.2 ? 3 : 0;
     if (this.plantsongs[index] instanceof Plantsong) {
       this.plantsongs[index]?.highlight();
-    } else {
+    } else if (PlayerController.plantsong instanceof Plantsong) {
       GameManager.highlightedObjects.push(this.object);
     }
   }
