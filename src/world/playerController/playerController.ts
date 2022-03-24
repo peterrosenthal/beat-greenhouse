@@ -10,6 +10,7 @@ import * as GenesisMachine from '../greenhouse/machines/genesisMachine';
 import * as InterpreterMachine from '../greenhouse/machines/interpreterMachine';
 import MovementState from './MovementState';
 import Bench from '../greenhouse/Bench';
+import Plantsong from '../greenhouse/Plantsong';
 
 export const acceleration = 30;
 export const deacceleration = 15;
@@ -60,6 +61,8 @@ document.body.appendChild(menu);
 document.body.appendChild(crosshair);
 
 let overrideMenu = false;
+
+export let plantsong: Plantsong | undefined;
 
 export function init(): void {
   controls = new PointerLockControls(camera, RenderManager.canvas);
@@ -121,11 +124,17 @@ export function update(): void {
   /* mouse intersection behavior */
   raycaster.setFromCamera(new THREE.Vector2(), camera);
   const intersections = raycaster.intersectObject(GameManager.scene, true);
-  if (!handleMachineIntersections(intersections, false)) {
-    const [bench, intersectionLocal] = getClosestBenchIntersection(intersections);
-    if (bench !== undefined && intersectionLocal !== undefined) {
-      bench.onBenchHover(intersectionLocal);
+  let intersected = handlePlantsongIntersections(intersections, false);
+  if (!intersected) {
+    intersected = handleMachineIntersections(intersections, false);
+    if (!intersected) {
+      intersected = handleBenchIntersections(intersections, false);
     }
+  }
+
+  if (plantsong instanceof Plantsong) {
+    plantsong.object.position.set(0, -3, -4.5);
+    camera.localToWorld(plantsong.object.position);
   }
 }
 
@@ -166,6 +175,22 @@ export function showCrosshair(): void {
 
 export function hideCrosshair(): void {
   crosshair.style.display = 'none';
+}
+
+function handlePlantsongIntersections(
+  intersections: THREE.Intersection[],
+  click: boolean,
+): boolean {
+  for (let i = 0; i < intersections.length; i++) {
+    const intersection = intersections[i];
+    const object = intersection.object;
+    const plant = Greenhouse.findPlantsong(object);
+    if (plant instanceof Plantsong && plant !== plantsong) {
+      click ? plant.pickUp() : plant.highlight();
+      return true;
+    }
+  }
+  return false;
 }
 
 function handleMachineIntersections(
@@ -236,49 +261,32 @@ function handleMachineIntersections(
   return false;
 }
 
-function getClosestBenchIntersection(
+function handleBenchIntersections(
   intersections: THREE.Intersection[],
-): [Bench | undefined, THREE.Vector3 | undefined] {
-  let bench: Bench | undefined;
-  let intersectionLocal: THREE.Vector3 | undefined;
+  click: boolean,
+): boolean {
   for (let i = 0; i < intersections.length; i++) {
-    if (bench !== undefined && intersectionLocal !== undefined) {
-      break;
-    }
-    const object = intersections[i].object;
-    for (const greenhouseBench of Greenhouse.allBenches) {
-      if (object === greenhouseBench.object) {
-        bench = greenhouseBench;
-        intersectionLocal = intersections[i].point.clone();
-        bench.object.worldToLocal(intersectionLocal);
-        break;
-      }
-      let objectIsBenchChild = false;
-      greenhouseBench.object.traverse(function(child: THREE.Object3D) {
-        if (object === child) {
-          objectIsBenchChild = true;
-        }
-      });
-      if (objectIsBenchChild) {
-        bench = greenhouseBench;
-        intersectionLocal = intersections[i].point.clone();
-        bench.object.worldToLocal(intersectionLocal);
-        break;
-      }
+    const intersection = intersections[i];
+    const object = intersection.object;
+    const bench = Greenhouse.findBench(object);
+    if (bench instanceof Bench) {
+      click ? bench.onBenchClick(intersection) : bench.onBenchHover(intersection);
+      return true;
     }
   }
-  return [bench, intersectionLocal];
+  return false;
 }
 
 function onMouseDown(): void {
   raycaster.setFromCamera(new THREE.Vector2(), camera);
   const intersections = raycaster.intersectObject(GameManager.scene, true);
-  if (!handleMachineIntersections(intersections, true)) {
-    const [bench, intersectionLocal] = getClosestBenchIntersection(intersections);
-    if (bench !== undefined && intersectionLocal !== undefined) {
-      bench.onBenchClick(intersectionLocal);
+  let intersected = handlePlantsongIntersections(intersections, true);
+  if (!intersected) {
+    intersected = handleMachineIntersections(intersections, true);
+    if (!intersected) {
+      intersected = handleBenchIntersections(intersections, true);
     }
-  } 
+  }
 }
 
 function onKeyDown(event: KeyboardEvent): void {
@@ -311,4 +319,8 @@ function updateMovementState(code: string, value: boolean): void {
       state.right = value;
       break;
   }
+}
+
+export function setPlantsong(plant: Plantsong | undefined): void {
+  plantsong = plant;
 }

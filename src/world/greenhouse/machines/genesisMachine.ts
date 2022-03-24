@@ -10,6 +10,8 @@ import Plantsong from '../Plantsong';
 
 export const object = new THREE.Group();
 
+export let plantsong: Plantsong | undefined;
+
 const fileReader = new FileReader();
 fileReader.addEventListener('load', onFileReaderLoad);
 
@@ -61,7 +63,8 @@ export function init(): void {
 
 export function onMachineHover(intersection: THREE.Intersection): void {
   const intersectedObject = intersection.object;
-  if (intersectedObject.name.includes('computer')) {
+  if (intersectedObject.name.includes('computer') &&
+      !(PlayerController.plantsong instanceof Plantsong)) {
     object.traverse((child: THREE.Object3D) => {
       if (child.name.includes('computer')) {
         GameManager.highlightedObjects.push(child);
@@ -69,11 +72,21 @@ export function onMachineHover(intersection: THREE.Intersection): void {
     });
     return;
   }
+  const intersectionLocal = object.worldToLocal(intersection.point.clone());
+  if (intersectionLocal.x < 0.45 && plantsong instanceof Plantsong) {
+    plantsong.highlight();
+  }
 }
 
 export function onMachineClick(intersection: THREE.Intersection): void {
-  if (intersection.object.name.includes('computer')) {
+  if (intersection.object.name.includes('computer') &&
+      !(PlayerController.plantsong instanceof Plantsong)) {
     showImportMenu();
+    return;
+  }
+  const intersectionLocal = object.worldToLocal(intersection.point.clone());
+  if (intersectionLocal.x < 0.45 && plantsong instanceof Plantsong) {
+    plantsong.pickUp();
   }
 }
 
@@ -89,11 +102,16 @@ export function hideImportMenu(): void {
 }
 
 async function createPlant(sequence: mm.INoteSequence): Promise<void> {
+  if (plantsong instanceof Plantsong) {
+    console.error('cannot create new plantsong when one is already present on bench');
+    return;
+  }
   PlayerController.lockControls();
   const encoding = await MusicGenerator.encode(sequence);
   const position = new THREE.Vector3(-0.3, 1, -0.4);
   object.localToWorld(position);
-  new Plantsong(encoding, position);
+  plantsong = new Plantsong(encoding, position);
+  Greenhouse.plantsongs.push(plantsong);
 }
 
 function onFileReaderLoad(): void {
@@ -102,7 +120,6 @@ function onFileReaderLoad(): void {
       mm.midiToSequenceProto(fileReader.result),
       2,
     );
-    console.log(sequence);
     createPlant(sequence);
   }
 }
@@ -143,4 +160,8 @@ function onInteractionAreaMouseEnter(): void {
 
 function onInteractionAreaMouseLeave(): void {
   fileInteractionArea.src = 'resources/ui/upload-midi-button/default.png';
+}
+
+export function setPlantsong(plant: Plantsong | undefined) {
+  plantsong = plant;
 }

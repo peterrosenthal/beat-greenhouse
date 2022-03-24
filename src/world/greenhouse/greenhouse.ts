@@ -8,12 +8,15 @@ import * as InterpreterMachine from './machines/interpreterMachine';
 import Bench from './Bench';
 import Workbench from './Workbench';
 import Showbench from './Showbench';
+import Plantsong from './Plantsong';
 
 export const object = new THREE.Group();
 
 export const workbenches: Workbench[] = [];
 export const showbenches: Showbench[] = [];
 export const allBenches: Bench[] = [];
+
+export const plantsongs: Plantsong[] = [];
 
 const workbenchesParent = new THREE.Group();
 const showbenchesParent = new THREE.Group();
@@ -86,4 +89,40 @@ export function update(): void {
   for (const bench of allBenches) {
     bench.update();
   }
+}
+
+export function findPlantsong(object: THREE.Object3D): Plantsong | undefined {
+  for (const plantsong of plantsongs) {
+    if (plantsong.object === object) {
+      return plantsong;
+    }
+    let isPlantsong = false;
+    plantsong.object.traverse(function(child: THREE.Object3D) {
+      if (child === object) {
+        isPlantsong = true;
+      }
+    });
+    if (isPlantsong) {
+      return plantsong;
+    }
+  }
+  return undefined;
+}
+
+export function findBench(object: THREE.Object3D): Bench | undefined {
+  for (const bench of allBenches) {
+    if (bench.object === object) {
+      return bench;
+    }
+    let isBench = false;
+    bench.object.traverse(function(child: THREE.Object3D) {
+      if (child === object) {
+        isBench = true;
+      }
+    });
+    if (isBench) {
+      return bench;
+    }
+  }
+  return undefined;
 }

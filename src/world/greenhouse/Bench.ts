@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 import * as ResourceManager from '../../managers/resourceManager/resourceManager';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import Plantsong from './Plantsong';
 
 export default class Bench {
   parent: THREE.Group;
   position: THREE.Vector3;
   object: THREE.Object3D;
-  selectionHighlight: THREE.Mesh;
+  plantsongs: Array<Plantsong | undefined>;
 
   constructor(parent: THREE.Group, position: THREE.Vector3) {
     this.parent = parent;
@@ -16,31 +17,26 @@ export default class Bench {
     this.object.position.copy(this.position);
     this.parent.add(this.object);
 
-    const selectionHighlightMaterial = new THREE.MeshBasicMaterial({
-      color: 0x45fc8a,
-      alphaMap: ResourceManager.items.selectionAlpha as THREE.Texture,
-      side: THREE.DoubleSide,
-    });
-    selectionHighlightMaterial.transparent = true;
-    this.selectionHighlight = new THREE.Mesh(
-      new THREE.PlaneGeometry(),
-      selectionHighlightMaterial,
-    );
-    this.selectionHighlight.rotation.x = -Math.PI / 2;
+    this.plantsongs = [];
   }
 
   update(): void {
-    this.selectionHighlight.removeFromParent();
+    // this method does nothing by default, but can be override by inherited classes
   }
 
-  onBenchHover(intersectLocation: THREE.Vector3): void {
+  onBenchHover(intersection: THREE.Intersection): void {
     // this method does nothing by default, needs to be overridden by inherited classes
-    console.log(intersectLocation);
+    console.log(intersection);
   }
 
-  onBenchClick(intersectionLocation: THREE.Vector3): void {
-    // this method does nothing by default, needs to be override by inherited classses
-    console.log(intersectionLocation);
+  onBenchClick(intersection: THREE.Intersection): void {
+    // this method does nothing by default, needs to be overriden by inherited classses
+    console.log(intersection);
+  }
+
+  checkPlantsongsForRemoval(plantsong: Plantsong): void {
+    // this method does nothing by default, needs to be overridden by inherited classes
+    console.log(plantsong);
   }
 
   protected setObjectFromResources(resource: string): void {

@@ -3,6 +3,11 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as ResourceManager from '../../managers/resourceManager/resourceManager';
 import * as GameManager from '../../managers/gameManager';
 import * as PlantGenerator from '../../generators/plantGenerator/plantGenerator';
+import * as PlayerController from '../playerController/playerController';
+import * as Greenhouse from './greenhouse';
+import * as GenesisMachine from './machines/genesisMachine';
+import * as InterpreterMachine from './machines/interpreterMachine';
+import * as CombinatorMachine from './machines/combinatorMachine';
 import Plant from '../../generators/plantGenerator/Plant';
 
 export default class Plantsong {
@@ -25,6 +30,30 @@ export default class Plantsong {
     this.object.add(this.pot);
     this.object.position.copy(position);
     GameManager.scene.add(this.object);
+  }
+
+  public highlight(): void {
+    GameManager.highlightedObjects.push(this.object);
+  }
+
+  public pickUp(): void {
+    if (!(PlayerController.plantsong instanceof Plantsong)) {
+      if (GenesisMachine.plantsong === this) {
+        GenesisMachine.setPlantsong(undefined);
+      }
+      if (InterpreterMachine.plantsong === this) {
+        InterpreterMachine.setPlantsong(undefined);
+      }
+      for (let i = 0; i < CombinatorMachine.plantsongs.length; i++) {
+        if (CombinatorMachine.plantsongs[i] === this) {
+          CombinatorMachine.setPlantsong(i, undefined);
+        }
+      }
+      for (const bench of Greenhouse.allBenches) {
+        bench.checkPlantsongsForRemoval(this);
+      }
+      PlayerController.setPlantsong(this);
+    }
   }
 
   private setPlant(plant: Plant) {
