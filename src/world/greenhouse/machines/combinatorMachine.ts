@@ -2,10 +2,16 @@ import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as GameManager from '../../../managers/gameManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
+import * as EventManager from '../../../managers/eventManager/eventManager';
+import * as WorkerManager from '../../../managers/workerManager/workerManager';
 import * as Greenhouse from '../greenhouse';
 import * as PlayerController from '../../playerController/playerController';
-import * as MusicGenerator from '../../../generators/musicGenerator/musicGenerator';
 import Plantsong from '../Plantsong';
+import MusicParameters from '../../../generators/musicGenerator/musicParameters';
+import { CombinePlantsongsRequest }
+  from '../../../managers/workerManager/messages/CombinePlantsongs/CombinePlantsongsRequest';
+import PlantsongPrimitive
+  from '../../../managers/workerManager/messages/CombinePlantsongs/PlantsongPrimitive';
 
 export const object = new THREE.Group();
 
@@ -161,21 +167,32 @@ async function cobmine(): Promise<void> {
   // set the balance parameter of the music generator based on the levers
   const leftLeverAmount = (leftLever.position.y - 1.6) / 0.85;
   const rightLeverAmount = (rightLever.position.y - 1.6) / 0.85;
-  MusicGenerator.parameters.balance =  leftLeverAmount > rightLeverAmount ?
+  const balance = leftLeverAmount > rightLeverAmount ?
     rightLeverAmount / (leftLeverAmount * 2):
     1 - leftLeverAmount / (rightLeverAmount * 2);
+  const parameters: MusicParameters  = {
+    balance: balance,
+    similarity: 0.5,
+    temperature: 0.5,
+  };
 
-  // decode the plantsongs that will be combined
-  const sequenceA = await MusicGenerator.decode(plantsongs[0]!.encoding);
-  const sequenceB = await MusicGenerator.decode(plantsongs[1]!.encoding);
+  const request: CombinePlantsongsRequest = {
+    namespace: 'combinator',
+    encodingA: plantsongs[0]!.encoding,
+    encodingB: plantsongs[1]!.encoding,
+    parameters: parameters,
+  };
+  EventManager.addEventListener('combine.combinator', fillBenches);
+  console.log('senging message to worker');
+  WorkerManager.worker.postMessage(request);
+}
 
-  // combine the sequences with the music generator
-  const sequences = await MusicGenerator.combine(sequenceA, sequenceB);
-
-  // find a random bench to put a plant on, encode the sequence,
-  // create a plant out of the encoding, and rinse and repeat
-  while (sequences.length > 0) {
-    const sequence = sequences.pop()!;
+function fillBenches(primitives: PlantsongPrimitive[]): void {
+  console.log('recieving message from worker');
+  // find a random bench and place to put a plantsong onto, and
+  // create the plantsong out of the plantsong primitive
+  while (primitives.length > 0) {
+    const primitive = primitives.pop()!;
     let indexOfBench = Math.floor(Math.random() * Greenhouse.workbenches.length);
     let indexOnBench = Math.floor(Math.random() * 2);
     // eslint-disable-next-line max-len
@@ -183,10 +200,9 @@ async function cobmine(): Promise<void> {
       indexOfBench = Math.floor(Math.random() * Greenhouse.workbenches.length);
       indexOnBench = Math.floor(Math.random() * 2);
     }
-    const encoding = await MusicGenerator.encode(sequence);
     const position = new THREE.Vector3(indexOnBench === 0 ? -3 : 3, 2.5, 0);
     Greenhouse.workbenches[indexOfBench].object.localToWorld(position);
-    const plantsong = new Plantsong(encoding, position);
+    const plantsong = new Plantsong(primitive.encoding, position, primitive.plant);
     Greenhouse.plantsongs.push(plantsong);
     Greenhouse.workbenches[indexOfBench].plantsongs[indexOnBench] = plantsong;
   }

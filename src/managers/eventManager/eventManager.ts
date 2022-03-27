@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import EventName from './EventName';
 
 const callbacks :Record<string, Record<string, Array<(...args: unknown[]) => unknown>>> = {};
@@ -21,7 +22,7 @@ function resolveName(name: string): EventName {
 
 export function addEventListener(
   _names: string,
-  callback: (...args: unknown[]) => unknown,
+  callback: (...args: any[]) => unknown,
 ): boolean {
   if (_names === '') {
     console.warn('Cannot add event listener; invalid event name(s) parameter.');

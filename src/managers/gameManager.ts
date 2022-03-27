@@ -1,10 +1,13 @@
 import * as THREE from 'three';
+import * as WorkerManager from './workerManager/workerManager';
 import * as RenderManager from './renderManager';
 import * as EventManager from './eventManager/eventManager';
 import * as PlayerController from '../world/playerController/playerController';
 import * as Environment from '../world/environment';
 import * as Greenhouse from '../world/greenhouse/greenhouse';
 import * as Grass from '../world/grass';
+
+WorkerManager.worker.postMessage('hello world!');
 
 export let isPlaying = false;
 

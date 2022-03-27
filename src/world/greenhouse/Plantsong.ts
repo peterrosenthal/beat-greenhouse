@@ -17,11 +17,8 @@ export default class Plantsong {
   object: THREE.Group;
   pot: THREE.Group;
 
-  constructor(encoding: Float32Array, position = new THREE.Vector3()) {
+  constructor(encoding: Float32Array, position = new THREE.Vector3(), plant?: Plant) {
     this.encoding = encoding;
-
-    const parameters = PlantGenerator.getParametersFromEncoding(this.encoding);
-    PlantGenerator.generatePlant(parameters).then(this.setPlant.bind(this));
 
     this.pot = (ResourceManager.items.potModel as GLTF).scene.clone();
     this.pot.scale.set(0.8, 0.8, 0.8);
@@ -30,6 +27,14 @@ export default class Plantsong {
     this.object.add(this.pot);
     this.object.position.copy(position);
     GameManager.scene.add(this.object);
+
+    if (plant instanceof Plant) {
+      this.plant = plant;
+      this.object.add(this.plant.object);
+    } else {
+      const parameters = PlantGenerator.getParametersFromEncoding(this.encoding);
+      PlantGenerator.generatePlant(parameters).then(this.setPlant.bind(this));
+    }
   }
 
   public highlight(): void {

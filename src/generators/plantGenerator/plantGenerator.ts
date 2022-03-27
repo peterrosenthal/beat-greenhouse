@@ -82,26 +82,6 @@ export function getDefaultParameters(): PlantParameters {
   };
 }
 
-export function getRandomParameters(): PlantParameters {
-  const latentSpaceVector = generateRandomLatentSpaceVector();
-  return getParametersFromEncoding(latentSpaceVector);
-}
-
-
-export function generateRandomLatentSpaceVector(): Float32Array {
-  const latentSpaceVector = new Float32Array(256);
-  let length = 0;
-  for (let i = 0; i < 256; i++) {
-    latentSpaceVector[i] = Math.random() - 0.5;
-    length += latentSpaceVector[i] * latentSpaceVector[i];
-  }
-  length = Math.sqrt(length);
-  for (let i = 0; i < 256; i++) {
-    latentSpaceVector[i] /= length;
-  }
-  return latentSpaceVector;
-}
-
 export function getParametersFromEncoding(encoding: Float32Array): PlantParameters {
   // step 1: reduce encoding into however many dimensions we can actually make use of
   // currently that number of dimensions is... 36... I think

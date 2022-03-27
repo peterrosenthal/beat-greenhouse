@@ -4,8 +4,9 @@
   "description": "Cultivate your songs as plants in a greenhouse",
   "main": "src/index.ts",
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --tsconfig=tsconfig.json --loader:.glsl=text --minify --sourcemap --outfile=dist/bundle.js",
-    "dev": "esbuild src/index.ts --bundle --tsconfig=tsconfig.json --loader:.glsl=text --watch --sourcemap --outfile=dist/bundle.js",
+    "build": "esbuild src/index.ts --bundle --tsconfig=tsconfig.json --loader:.glsl=text --minify --sourcemap --outfile=dist/bundle.js; esbuild src/managers/workerManager/worker.ts --bundle --sourcemap --outfile=dist/worker.js",
+    "dev": " esbuild src/index.ts --bundle --tsconfig=tsconfig.json --loader:.glsl=text --watch --sourcemap --outfile=dist/bundle.js",
+    "dev-worker": "esbuild src/managers/workerManager/worker.ts --bundle --watch --sourcemap --outfile=dist/worker.js",
     "serve": "npx http-server"
   },
   "repository": {

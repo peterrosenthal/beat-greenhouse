@@ -1,22 +1,19 @@
-import * as mm from '@magenta/music/es6';
+import { MusicVAE, INoteSequence } from '@magenta/music/es6';
 import { tensor2d } from '@tensorflow/tfjs';
 import MusicParameters from './musicParameters';
 
-export const parameters = getDefaultParameters();
-
-const mvae = new mm.MusicVAE(parameters.checkpoint);
+const mvae = new MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2');
 mvae.initialize();
 
 export function getDefaultParameters(): MusicParameters {
   return {
-    checkpoint: 'https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2',
     balance: 0.5,
     similarity: 0.8,
     temperature: 0.5,
   };
 }
 
-export async function encode(sequence: mm.INoteSequence): Promise<Float32Array> {
+export async function encode(sequence: INoteSequence): Promise<Float32Array> {
   if (!mvae.initialized) {
     await mvae.initialize();
   }
@@ -25,7 +22,7 @@ export async function encode(sequence: mm.INoteSequence): Promise<Float32Array> 
   return Float32Array.from(array);
 }
 
-export async function decode(array : Float32Array): Promise<mm.INoteSequence> {
+export async function decode(array : Float32Array): Promise<INoteSequence> {
   if (!mvae.initialized) {
     await mvae.initialize();
   }
@@ -35,16 +32,17 @@ export async function decode(array : Float32Array): Promise<mm.INoteSequence> {
 }
 
 export async function combine(
-  sequenceA: mm.INoteSequence,
-  sequenceB: mm.INoteSequence,
-): Promise<mm.INoteSequence[]> {
+  sequenceA: INoteSequence,
+  sequenceB: INoteSequence,
+  parameters = getDefaultParameters(),
+): Promise<INoteSequence[]> {
   if (!mvae.initialized) {
     await mvae.initialize();
   }
   const numChildren = 20;
-  const children: mm.INoteSequence[] = [];
+  const children: INoteSequence[] = [];
   for (let i = 0; i <= numChildren; i++) {
-    const parents: mm.INoteSequence[] = [];
+    const parents: INoteSequence[] = [];
     parents.push((await mvae.similar(
       sequenceA,
       1,
