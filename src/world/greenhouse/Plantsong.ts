@@ -9,6 +9,7 @@ import * as GenesisMachine from './machines/genesisMachine';
 import * as InterpreterMachine from './machines/interpreterMachine';
 import * as CombinatorMachine from './machines/combinatorMachine';
 import Plant from '../../generators/plantGenerator/Plant';
+import PlantPrimitive from '../../generators/plantGenerator/primitives/PlantPrimitive';
 
 export default class Plantsong {
   encoding: Float32Array;
@@ -33,7 +34,8 @@ export default class Plantsong {
       this.object.add(this.plant.object);
     } else {
       const parameters = PlantGenerator.getParametersFromEncoding(this.encoding);
-      PlantGenerator.generatePlant(parameters).then(this.setPlant.bind(this));
+      this.plant = PlantGenerator.generatePlant(parameters);
+      this.object.add(this.plant.object);
     }
   }
 
@@ -65,10 +67,5 @@ export default class Plantsong {
     this.object.removeFromParent();
     this.plant?.dispose();
     Greenhouse.filterPlantsongs(this);
-  }
-
-  private setPlant(plant: Plant) {
-    this.plant = plant;
-    this.object.add(this.plant.object);
   }
 }

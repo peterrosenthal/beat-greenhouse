@@ -3,10 +3,13 @@ import SimplexNoise from 'simplex-noise';
 import PlantParameters from './parameters/PlantParameters';
 import PlantNode from './PlantNode';
 import Plant from './Plant';
+import PlantPrimitive from './primitives/PlantPrimitive';
+import PlantNodePrimitive from './primitives/PlantNodePrimitive';
+import Vector3Primitive from './primitives/Vector3Primitive';
 
 const simplex = new SimplexNoise('Beat Greenhouse');
 
-export async function generatePlant(parameters: PlantParameters): Promise<Plant> {
+export function generatePlant(parameters: PlantParameters): Plant {
   // step 1: generate attraction points
   const attractors = generateInitialAttractors(parameters);
 
@@ -17,6 +20,120 @@ export async function generatePlant(parameters: PlantParameters): Promise<Plant>
   const plant = new Plant(nodes, parameters);
 
   return plant;
+}
+
+export function generatePrimitive(encoding: Float32Array): PlantPrimitive {
+  const parameters = getParametersFromEncoding(encoding);
+  const attractors = generateInitialAttractors(parameters);
+  const nodes = generateNodes(attractors, parameters);
+  const root = rootToRootNodePrimitive(getRoot(nodes));
+  return { encoding, root };
+}
+
+export function getRoot(nodes: PlantNode[]): PlantNode {
+  let node = nodes[0];
+  while (node.parent !== undefined) {
+    node = node.parent;
+  }
+  return node;
+}
+
+export function rootToRootNodePrimitive(root: PlantNode): PlantNodePrimitive {
+  function convertVector(vector: THREE.Vector3): Vector3Primitive {
+    return {
+      x: vector.x,
+      y: vector.y,
+      z: vector.z,
+    }
+  }
+  function convertVectors(vectors: THREE.Vector3[]): Vector3Primitive[] {
+    const convertedVectors: Vector3Primitive[] = [];
+    for (const vector of vectors) {
+      convertedVectors.push(convertVector(vector));
+    }
+    return convertedVectors;
+  }
+  function convertChildrenRecursive(node: PlantNode): PlantNodePrimitive[] {
+    const recursiveChildren: PlantNodePrimitive[] = [];
+    for (const child of node.children) {
+      recursiveChildren.push({
+        parent: undefined,
+        children: convertChildrenRecursive(child),
+        position: convertVector(child.position),
+        attractors: convertVectors(child.attractors),
+        radius: child.radius,
+        leaves: child.leaves,
+      });
+    }
+    return recursiveChildren;
+  }
+  function setParantageRecursive(node: PlantNodePrimitive): void {
+    for (const child of node.children) {
+      child.parent = node;
+      setParantageRecursive(child);
+    }
+  }
+  const convertedRoot: PlantNodePrimitive = {
+    parent: undefined,
+    children: convertChildrenRecursive(root),
+    position: convertVector(root.position),
+    attractors: convertVectors(root.attractors),
+    radius: root.radius,
+    leaves: root.leaves,
+  }
+  setParantageRecursive(convertedRoot);
+  return convertedRoot;
+}
+
+export function rootNodePrimitiveToNodesArray(root: PlantNodePrimitive): PlantNode[] {
+  const nodes: PlantNode[] = [];
+  function convertVector(vector: Vector3Primitive): THREE.Vector3 {
+    return new THREE.Vector3(vector.x, vector.y, vector.z);
+  }
+  function convertVectors(vectors: Vector3Primitive[]): THREE.Vector3[] {
+    const convertedVectors: THREE.Vector3[] = [];
+    for (const vector of vectors) {
+      convertedVectors.push(convertVector(vector));
+    }
+    return convertedVectors;
+  }
+  function convertChildrenRecursive(node: PlantNodePrimitive): PlantNode[] {
+    const recursiveChildren: PlantNode[] = [];
+    for (const child of node.children) {
+      recursiveChildren.push({
+        parent: undefined,
+        children: convertChildrenRecursive(child),
+        position: convertVector(child.position),
+        attractors: convertVectors(child.attractors),
+        radius: child.radius,
+        leaves: child.leaves,
+      });
+    }
+    return recursiveChildren;
+  }
+  function setParantageRecursive(node: PlantNode): void {
+    for (const child of node.children) {
+      child.parent = node;
+      setParantageRecursive(child);
+    }
+  }
+  function setNodesRecursive(node: PlantNode): void {
+    nodes.push(node);
+    for (const child of node.children) {
+      setNodesRecursive(child);
+    }
+  }
+  const convertedRoot: PlantNode = {
+    parent: undefined,
+    children: convertChildrenRecursive(root),
+    position: convertVector(root.position),
+    attractors: convertVectors(root.attractors),
+    radius: root.radius,
+    leaves: root.leaves,
+  };
+  setParantageRecursive(convertedRoot);
+  setNodesRecursive(convertedRoot);
+  return nodes;
 }
 
 export function getDefaultParameters(): PlantParameters {

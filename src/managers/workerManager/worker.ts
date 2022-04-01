@@ -4,14 +4,17 @@ import { CombinePlantsongsRequest, isCombinePlantsongsRequest }
   from './messages/CombinePlantsongs/CombinePlantsongsRequest';
 import { CombinePlantsongsResponse }
   from './messages/CombinePlantsongs/CombinePlantsongsResponse';
-import PlantsongPrimitive from './messages/CombinePlantsongs/PlantsongPrimitive';
+import PlantPrimitive from '../../generators/plantGenerator/primitives/PlantPrimitive';
 
 self.addEventListener('message', parseMessage);
 
 function parseMessage(message: MessageEvent): void {
   console.log('can I console log in a web worker?');
+  console.log(message.data);
+  console.log(typeof message.data);
   if (typeof message.data === 'object') {
     if (isCombinePlantsongsRequest(message.data)) {
+      console.log('isCombinePlantsongsRequest');
       const data = message.data as CombinePlantsongsRequest;
       combinePlantsongs(data);
     }
@@ -22,6 +25,8 @@ function parseMessage(message: MessageEvent): void {
 }
 
 async function combinePlantsongs(request: CombinePlantsongsRequest): Promise<void> {
+  const namespace = request.namespace;
+
   // decode the plantsongs that will be combined
   const sequenceA = await MusicGenerator.decode(request.encodingA);
   const sequenceB = await MusicGenerator.decode(request.encodingB);
@@ -30,18 +35,13 @@ async function combinePlantsongs(request: CombinePlantsongsRequest): Promise<voi
   const sequences = await MusicGenerator.combine(sequenceA, sequenceB, request.parameters);
 
   // encode each of the sequences into a plantsong
-  const plantsongPrimitives: PlantsongPrimitive[] = [];
+  const plantPrimitives: PlantPrimitive[] = [];
   for (const sequence of sequences) {
     const encoding = await MusicGenerator.encode(sequence);
-    const parameters = PlantGenerator.getParametersFromEncoding(encoding);
-    const plant = await PlantGenerator.generatePlant(parameters);
-    plantsongPrimitives.push({ encoding, plant });
+    const primitive = PlantGenerator.generatePrimitive(encoding);
+    plantPrimitives.push(primitive);
   }
 
   // create and send the response
-  const response: CombinePlantsongsResponse = {
-    namespace: request.namespace,
-    plantsongPrimitives,
-  };
-  self.postMessage(response);
+  self.postMessage({ namespace, plantPrimitives });
 }

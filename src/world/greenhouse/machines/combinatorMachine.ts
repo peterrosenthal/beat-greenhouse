@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as PlantGenerator from '../../../generators/plantGenerator/plantGenerator';
 import * as GameManager from '../../../managers/gameManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
 import * as EventManager from '../../../managers/eventManager/eventManager';
@@ -10,8 +11,8 @@ import Plantsong from '../Plantsong';
 import MusicParameters from '../../../generators/musicGenerator/musicParameters';
 import { CombinePlantsongsRequest }
   from '../../../managers/workerManager/messages/CombinePlantsongs/CombinePlantsongsRequest';
-import PlantsongPrimitive
-  from '../../../managers/workerManager/messages/CombinePlantsongs/PlantsongPrimitive';
+import PlantPrimitive from '../../../generators/plantGenerator/primitives/PlantPrimitive';
+import Plant from '../../../generators/plantGenerator/Plant';
 
 export const object = new THREE.Group();
 
@@ -187,7 +188,7 @@ async function cobmine(): Promise<void> {
   WorkerManager.worker.postMessage(request);
 }
 
-function fillBenches(primitives: PlantsongPrimitive[]): void {
+function fillBenches(primitives: PlantPrimitive[]): void {
   console.log('recieving message from worker');
   // find a random bench and place to put a plantsong onto, and
   // create the plantsong out of the plantsong primitive
@@ -202,7 +203,10 @@ function fillBenches(primitives: PlantsongPrimitive[]): void {
     }
     const position = new THREE.Vector3(indexOnBench === 0 ? -3 : 3, 2.5, 0);
     Greenhouse.workbenches[indexOfBench].object.localToWorld(position);
-    const plantsong = new Plantsong(primitive.encoding, position, primitive.plant);
+    const parameters = PlantGenerator.getParametersFromEncoding(primitive.encoding);
+    const nodes = PlantGenerator.rootNodePrimitiveToNodesArray(primitive.root);
+    const plant = new Plant(nodes, parameters);
+    const plantsong = new Plantsong(primitive.encoding, position, plant);
     Greenhouse.plantsongs.push(plantsong);
     Greenhouse.workbenches[indexOfBench].plantsongs[indexOnBench] = plantsong;
   }

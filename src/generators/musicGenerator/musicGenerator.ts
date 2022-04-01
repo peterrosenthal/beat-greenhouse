@@ -1,9 +1,18 @@
-import { MusicVAE, INoteSequence } from '@magenta/music/es6';
+// import { MusicVAE, INoteSequence } from '@magenta/music/es6';
+import { MusicVAE } from '@magenta/music/es6/music_vae';
+import { INoteSequence } from '@magenta/music/es6/protobuf';
 import { tensor2d } from '@tensorflow/tfjs';
 import MusicParameters from './musicParameters';
 
 const mvae = new MusicVAE('https://storage.googleapis.com/magentadata/js/checkpoints/music_vae/mel_4bar_med_q2');
-mvae.initialize();
+
+export async function init(): Promise<void> {
+  try {
+    await mvae.initialize();
+  } catch (error) {
+    console.warn(`error during mvae initialization: ${error}`);
+  }
+}
 
 export function getDefaultParameters(): MusicParameters {
   return {
@@ -15,7 +24,7 @@ export function getDefaultParameters(): MusicParameters {
 
 export async function encode(sequence: INoteSequence): Promise<Float32Array> {
   if (!mvae.initialized) {
-    await mvae.initialize();
+    await init();
   }
   const tensor = await mvae.encode([sequence]);
   const array = (await tensor.array())[0];
@@ -24,7 +33,7 @@ export async function encode(sequence: INoteSequence): Promise<Float32Array> {
 
 export async function decode(array : Float32Array): Promise<INoteSequence> {
   if (!mvae.initialized) {
-    await mvae.initialize();
+    await init();
   }
   const tensor = tensor2d(array, [1, array.length]);
   const sequences = await mvae.decode(tensor);
@@ -37,9 +46,9 @@ export async function combine(
   parameters = getDefaultParameters(),
 ): Promise<INoteSequence[]> {
   if (!mvae.initialized) {
-    await mvae.initialize();
+    await init();
   }
-  const numChildren = 20;
+  const numChildren = 12;
   const children: INoteSequence[] = [];
   for (let i = 0; i <= numChildren; i++) {
     const parents: INoteSequence[] = [];
@@ -55,8 +64,8 @@ export async function combine(
       skewedRandom(parameters.similarity),
       parameters.temperature,
     ))[0]);
-    const results = await mvae.interpolate(parents, 50);
-    children.push(results[Math.floor(skewedRandom(0.5) * results.length)]);
+    const results = await mvae.interpolate(parents, 3);
+    children.push(results[1]);
   }
   return children;
 }

@@ -9,7 +9,7 @@ function parseMessage(message: MessageEvent): void {
   if (typeof message.data === 'object') {
     if (isCombinePlantsongsResponse(message.data)) {
       const data = message.data as CombinePlantsongsResponse;
-      EventManager.triggerEvent('combine.' + data.namespace, data.plantsongPrimitives);
+      EventManager.triggerEvent('combine.' + data.namespace, data.plantPrimitives);
     }
   } else if (typeof message.data === 'string') {
     const data = message.data as string;

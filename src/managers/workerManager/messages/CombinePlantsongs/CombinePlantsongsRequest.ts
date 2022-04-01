@@ -11,7 +11,7 @@ function isCombinePlantsongsRequest(object: Record<string, unknown>): boolean {
   return 'namespace' in object
       && 'encodingA' in object
       && 'encodingB' in object
-      && 'musicParams' in object;
+      && 'parameters' in object;
 }
 
 export { CombinePlantsongsRequest, isCombinePlantsongsRequest };
