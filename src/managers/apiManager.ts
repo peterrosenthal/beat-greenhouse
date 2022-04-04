@@ -26,11 +26,7 @@ async function get(
     return response.text();
   }).then(function(json: string) {
     try {
-      const parsed = JSON.parse(json);
-      if (typeof parsed === 'string' && parsed.includes('{')) {
-        return JSON.parse(parsed);
-      }
-      return parsed;
+      return JSON.parse(json);
     } catch (e) {
       return `couldn't parse string '${json}', error: ${e}`;
     }

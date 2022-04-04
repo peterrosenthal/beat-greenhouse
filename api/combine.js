@@ -7,6 +7,6 @@ export default function handler(req, res) {
     const responstring = JSON.stringify({
       message: `Hello ${name}! From an attempt at magenta shit!`,
     });
-    res.status(200).send(JSON.stringify(responstring));
+    res.status(200).send(responstring);
   });
 }
