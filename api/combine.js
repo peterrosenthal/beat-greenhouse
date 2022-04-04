@@ -1,4 +1,3 @@
-require('@tensorflow/tfjs-node');
 const mm = require('@magenta/music/node/music_vae');
 
 export default function handler(request, response) {
