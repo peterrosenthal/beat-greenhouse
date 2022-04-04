@@ -15,10 +15,13 @@ async function get(
   path: string,
   params?: URLSearchParams,
 ): Promise<Record<string, unknown> | string> {
+  const method = 'GET';
+  const headers = new Headers();
+  headers.append('Content-Type', 'application/json');
   const paramstring = params instanceof URLSearchParams ? `?${params.toString()}` : '';
   return fetch(
     `${base}/${path}${paramstring}`,
-    { method: 'GET' },
+    { method, headers },
   ).then(function (response: Response) {
     return response.text();
   }).then(function(json: string) {
