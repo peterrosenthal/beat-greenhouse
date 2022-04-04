@@ -1,4 +1,4 @@
-export default function handler(request, response) {
-  const { name = 'world' } = request.query;
+export default function handler(req, res) {
+  const { name = 'world' } = req.query;
   response.status(200).send(`Hello ${name}!`);
 }
