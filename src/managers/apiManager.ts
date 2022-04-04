@@ -1,4 +1,4 @@
-const base = 'http://localhost:8080/api';
+const base = 'http://beat-greenhouse-git-functions-rosenthal.vercel.app/api';
 
 export function init(): void {
   get('/combine', new URLSearchParams({ name: 'peter' }))
