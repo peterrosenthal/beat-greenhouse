@@ -1,7 +1,7 @@
 const base = 'http://beat-greenhouse-git-functions-rosenthal.vercel.app/api';
 
 export function init(): void {
-  get('/combine', new URLSearchParams({ name: 'peter' }))
+  get('combine', new URLSearchParams({ name: 'peter' }))
     .then((response: Record<string, unknown> | string) => {
       if (response instanceof Object && response.message !== undefined) {
         console.log(response.message);
