@@ -177,12 +177,6 @@ function stopDragging(): void {
 async function cobmine(): Promise<void> {
   // set the combining flag to true to trigger animations
   combining = true;
-  // show the menu
-  menu.style.display = 'flex';
-  // pause the game
-  GameManager.pause();
-  // let the time manager still update this element only
-  EventManager.addEventListener('update', update);
 
   // clear out all the workbenches in the greenhouse
   for (const bench of Greenhouse.workbenches) {
@@ -258,10 +252,4 @@ async function cobmine(): Promise<void> {
 
   // return the combining flag to false at the end of the method
   combining = false;
-  // hide the menu
-  menu.style.display = 'none';
-  // stop the specific listen event for update so that theres no double update being called
-  EventManager.removeEventListener('update', update);
-  // resume the game
-  GameManager.play();
 }
