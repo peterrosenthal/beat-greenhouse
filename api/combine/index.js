@@ -38,7 +38,7 @@ export default function handler(req, res) {
       return mvae.similar(body.parents.b, 1, skewedRandom(body.parameters.similarity), body.parameters.temperature);
     }).then((sequences) => {
       parents.push(sequences[0]);
-      return mvae.interpolate(parents, 30);
+      return mvae.interpolate(parents, 10);
     }).then((sequences) => {
       const child = sequences[Math.floor(skewedRandom(0.5) * sequences.length)];
       return res.status(200).json({ child });
