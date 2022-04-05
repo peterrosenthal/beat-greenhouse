@@ -28,7 +28,7 @@ async function get(
     try {
       return JSON.parse(json);
     } catch (e) {
-      return `couldn't parse string '${json}', error: ${e}`;
+      return json;
     }
   });
 }
