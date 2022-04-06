@@ -1,12 +1,17 @@
+require('@tensorflow/tfjs-node');
 const mm = require('@magenta/music/node/music_vae');
 
-export default function handler(req, res) {
-  let body;
-  try {
-    body = req.body;
-  } catch (e) {
-    return res.status(400).json({ error: `error while parsing request body: ${e}` });
+exports.combine = (req, res) => {
+  res.set('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    // Send response to OPTIONS requests
+    res.set('Access-Control-Allow-Methods', 'POST');
+    res.set('Access-Control-Allow-Headers', 'Content-Type');
+    res.set('Access-Control-Max-Age', '3600');
+    res.status(204).send('');
   }
+
+  const body = req.body || {};
   if (!(body.parents instanceof Object)) {
     return res.status(400).json({ error: `'parents' object is required in request body` });
   }
@@ -38,7 +43,7 @@ export default function handler(req, res) {
       return mvae.similar(body.parents.b, 1, skewedRandom(body.parameters.similarity), body.parameters.temperature);
     }).then((sequences) => {
       parents.push(sequences[0]);
-      return mvae.interpolate(parents, 10);
+      return mvae.interpolate(parents, 50);
     }).then((sequences) => {
       const child = sequences[Math.floor(skewedRandom(0.5) * sequences.length)];
       return res.status(200).json({ child });
@@ -48,7 +53,7 @@ export default function handler(req, res) {
   }
 }
 
-function skewedRandom(skew) {
+const skewedRandom = (skew) => {
   const pow = skew < 0.5 ? 0.5 / skew : (1 - skew) / 0.5;
   let u = 0;
   let v = 0;

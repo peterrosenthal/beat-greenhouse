@@ -1,14 +1,7 @@
-const base = 'https://beat-greenhouse-git-functions-rosenthal.vercel.app/api';
+const base = 'https://us-central1-beat-greenhouse.cloudfunctions.net';
 
 export function init(): void {
-  get('hello', new URLSearchParams({ name: 'peter' }))
-    .then((response: Record<string, unknown> | string) => {
-      if (response instanceof Object && response.message !== undefined) {
-        console.log(response.message);
-      } else {
-        console.log(response);
-      }
-    });
+  // do nothing for now I guess
 }
 
 async function send(

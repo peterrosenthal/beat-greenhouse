@@ -2,9 +2,7 @@ import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as ApiManager from '../../../managers/apiManager';
 import * as GameManager from '../../../managers/gameManager';
-import * as TimeManager from '../../../managers/timeManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
-import * as EventManager from '../../../managers/eventManager/eventManager';
 import * as Greenhouse from '../greenhouse';
 import * as PlayerController from '../../playerController/playerController';
 import * as MusicGenerator from '../../../generators/musicGenerator/musicGenerator';
@@ -92,8 +90,7 @@ export function update(): void {
     cobmine();
   }
   if (combining) {
-    const index = Math.floor((TimeManager.elapsed * 1.5 / 1000) % 4);
-    loadingAnim.src = loadingAnimSources[index];
+    // do some cool animations
   }
 }
 
