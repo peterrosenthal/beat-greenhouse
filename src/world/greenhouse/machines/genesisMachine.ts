@@ -45,12 +45,6 @@ content.appendChild(fileInput);
 
 const fileInteractionArea = document.createElement('img');
 fileInteractionArea.src = 'resources/ui/upload-midi-button/default.png';
-fileInteractionArea.addEventListener('click', onInteractionAreaClick);
-fileInteractionArea.addEventListener('dragenter', onInteractionAreaDrag);
-fileInteractionArea.addEventListener('dragover', onInteractionAreaDrag);
-fileInteractionArea.addEventListener('drop', onInteractionAreaDrop);
-fileInteractionArea.addEventListener('mouseenter', onInteractionAreaMouseEnter);
-fileInteractionArea.addEventListener('mouseleave', onInteractionAreaMouseLeave);
 content.appendChild(fileInteractionArea);
 
 export function init(): void {
@@ -59,6 +53,13 @@ export function init(): void {
   object.rotation.y = Math.PI;
 
   Greenhouse.object.add(object);
+
+  fileInteractionArea.addEventListener('click', onInteractionAreaClick);
+  fileInteractionArea.addEventListener('dragenter', onInteractionAreaDrag);
+  fileInteractionArea.addEventListener('dragover', onInteractionAreaDrag);
+  fileInteractionArea.addEventListener('drop', onInteractionAreaDrop);
+  fileInteractionArea.addEventListener('mouseenter', onInteractionAreaMouseEnter);
+  fileInteractionArea.addEventListener('mouseleave', onInteractionAreaMouseLeave);
 }
 
 export function onMachineHover(intersection: THREE.Intersection): void {
@@ -81,7 +82,7 @@ export function onMachineHover(intersection: THREE.Intersection): void {
 export function onMachineClick(intersection: THREE.Intersection): void {
   if (intersection.object.name.includes('computer') &&
       !(PlayerController.plantsong instanceof Plantsong)) {
-    showImportMenu();
+    showMenu();
     return;
   }
   const intersectionLocal = object.worldToLocal(intersection.point.clone());
@@ -90,13 +91,13 @@ export function onMachineClick(intersection: THREE.Intersection): void {
   }
 }
 
-export function showImportMenu(): void {
+export function showMenu(): void {
   PlayerController.unlockControls();
   menu.style.display = 'flex';
   PlayerController.hideCrosshair();
 }
 
-export function hideImportMenu(): void {
+export function hideMenu(): void {
   menu.style.display = 'none';
   PlayerController.showCrosshair();
 }

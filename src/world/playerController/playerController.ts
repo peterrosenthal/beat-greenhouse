@@ -8,6 +8,7 @@ import * as Greenhouse from '../greenhouse/greenhouse';
 import * as CombinatorMachine from '../greenhouse/machines/combinatorMachine';
 import * as GenesisMachine from '../greenhouse/machines/genesisMachine';
 import * as InterpreterMachine from '../greenhouse/machines/interpreterMachine';
+import * as OwnersManual from './ownersManual';
 import MovementState from './MovementState';
 import Bench from '../greenhouse/Bench';
 import Plantsong from '../greenhouse/Plantsong';
@@ -37,30 +38,11 @@ camera.position.set(10, 2.3, 0);
 let controls!: PointerLockControls;
 export const raycaster = new THREE.Raycaster();
 
-const title = document.createElement('h1');
-title.innerText = 'Beat Greenhouse';
-
-const instructions = document.createElement('p');
-instructions.innerHTML = 
-  'Move: WASD or arrow keys<br>Look: Move mouse<br>Press any key to play';
-
-const content = document.createElement('div');
-content.classList.add('menu-content');
-content.appendChild(title);
-content.appendChild(instructions);
-
-export const menu = document.createElement('div');
-menu.classList.add('pause-menu');
-menu.appendChild(content);
-
 export const crosshair = document.createElement('div');
 crosshair.classList.add('crosshair');
 crosshair.innerText = '.';
 
-document.body.appendChild(menu);
 document.body.appendChild(crosshair);
-
-let overrideMenu = false;
 
 export let plantsong: Plantsong | undefined;
 
@@ -73,10 +55,16 @@ export function init(): void {
   controls.connect();
   GameManager.scene.add(controls.getObject());
 
-  menu.addEventListener('click', lockControls);
-  controls.addEventListener('lock', hideMenu);
-  controls.addEventListener('lock', GenesisMachine.hideImportMenu);
-  controls.addEventListener('unlock', showMenu);
+  OwnersManual.init();
+
+  controls.addEventListener('lock', showCrosshair);
+  controls.addEventListener('lock', OwnersManual.hideMenu);
+  controls.addEventListener('lock', () => OwnersManual.overrideMenu(false));
+  controls.addEventListener('lock', GenesisMachine.hideMenu);
+  controls.addEventListener('lock', GameManager.play);
+  controls.addEventListener('unlock', hideCrosshair);
+  controls.addEventListener('unlock', OwnersManual.showMenu);
+  controls.addEventListener('unlock', GameManager.pause);
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
   window.addEventListener('mousedown', onMouseDown);
@@ -156,26 +144,9 @@ export function lockControls(): void {
 
 export function unlockControls(showMenu = false): void {
   controls.unlock();
-  GameManager.pause();
   if (!showMenu) {
-    overrideMenu = true;
+    OwnersManual.overrideMenu(true);
   }
-}
-
-export function hideMenu(): void {
-  GameManager.play();
-  overrideMenu = false;
-  menu.style.display = 'none';
-  showCrosshair();
-}
-
-export function showMenu(): void {
-  if (overrideMenu) {
-    return;
-  }
-  GameManager.pause();
-  menu.style.display = 'block';
-  hideCrosshair();
 }
 
 export function showCrosshair(): void {

@@ -30,17 +30,63 @@ canvas {
   height: 100%;
   background: #0000009a;
   z-index: 10;
-  color: white;
 }
 
-.menu-content {
+.pause-menu-content {
   width: 100%;
   height: 100%;
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
+}
+
+.arrow-button {
+  color: white;
+  background: #37718e;
+  border: none;
+  border-radius: 0.75em;
+  padding: 1em;
+  max-width: 6em;
+}
+
+.arrow-button:hover {
+  background: #254e70;
+  cursor: pointer;
+}
+
+.arrow-button img {
+  width: 100%;
+}
+
+.owners-manual {
+  width: 90%;
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.owners-manual-page {
+  width: 75%;
+  max-width: 55em;
+  background: white;
+  padding: 1.8em;
+  margin: 2em;
+  border-radius: 0.75em;
+}
+
+.play-button {
+  color: white;
+  background: #4da87d;
+  border: none;
+  border-radius: 0.75em;
+  padding: 1em;
+  min-width: 8em;
+}
+
+.play-button:hover {
+  background: #3f7d63;
   cursor: pointer;
 }
 
@@ -55,12 +101,12 @@ canvas {
   z-index: 9;
   display: flex;
   flex-flow: column;
+  justify-content: center;
   align-items: center;
-  justify-content: safe center;
 }
 
 .import-menu-close-button {
-  background-color: #e08588;
+  background: #e08588;
   color: white;
   border: none;
   border-radius: 0.75em;
@@ -69,19 +115,20 @@ canvas {
 }
 
 .import-menu-close-button:hover {
-  background-color: #dc797d;
+  background: #dc797d;
 }
 
 .import-menu-content {
   box-sizing: border-box;
   width: 100%;
-  background-color: white;
+  background: white;
   padding: 1.8em;
   margin: 1em;
   border-radius: 0.75em;
   display: flex;
   flex-flow: column;
-  justify-content: safe center;
+  justify-content: center;
+  align-items: center;
   text-align: center;
 }
 
@@ -89,29 +136,4 @@ canvas {
   margin: 0.5em auto;
   width: 80%;
   max-width: 20em;
-}
-
-.combine-waiting-menu {
-  box-sizing: border-box;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: #0000009a;
-  z-index: 9;
-  display: flex;
-  flex-flow: column;
-  align-items: center;
-  justify-content: safe center;
-}
-
-.combine-waiting-label {
-  color: white;
-}
-
-.plant-grow-animation {
-  padding: 3em;
-  border: none;
-  border-radius: 0.75em;
-  max-width: 18em;
-  background: white;
 }

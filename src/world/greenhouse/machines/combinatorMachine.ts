@@ -20,29 +20,6 @@ let activeLever: THREE.Object3D | undefined;
 
 export let combining = false;
 
-const menu = document.createElement('div');
-menu.classList.add('combine-waiting-menu');
-menu.style.display = 'none';
-document.body.appendChild(menu);
-
-const loadingLabel = document.createElement('h2');
-loadingLabel.classList.add('combine-waiting-label');
-loadingLabel.innerText =
-  'Please wait while the plants are combined together and the children are generated';
-menu.appendChild(loadingLabel);
-
-const loadingAnimSources = [
-  'resources/ui/plant-grow/0.png',
-  'resources/ui/plant-grow/1.png',
-  'resources/ui/plant-grow/2.png',
-  'resources/ui/plant-grow/3.png',
-];
-const loadingAnim = document.createElement('img');
-loadingAnim.classList.add('plant-grow-animation');
-loadingAnim.src = loadingAnimSources[0];
-loadingAnim.alt = 'A growing plant.';
-menu.appendChild(loadingAnim);
-
 export function init(): void {
   object.copy((ResourceManager.items.combinatorMachineModel as GLTF).scene);
   object.position.set(18, 0, 1);
