@@ -28,7 +28,7 @@ export default class Plant {
           child.radius,
           node.radius,
           this.parameters.growth.reach,
-          64,
+          8,
         );
         const cylinder = new THREE.Mesh(geometry, branchMaterial);
         const direction3d = child.position
@@ -76,8 +76,8 @@ export default class Plant {
           .clone()
           .lerp(node.position, leaf.height);
         leafParent.rotateY(
-          (direction2d.z <= 0 ? 1 : -1)
-          * direction2d.angleTo(new THREE.Vector3(1, 0, 0)) + Math.PI / 2
+          (direction2d.z <= 0 ? 1 : -1) *
+          direction2d.angleTo(new THREE.Vector3(1, 0, 0)) + Math.PI / 2
         );
         leafParent.rotateX(direction3d.angleTo(new THREE.Vector3(0, 1, 0)));
         leafParent.rotateY(leaf.theta);

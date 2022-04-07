@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import * as ApiManager from '../../../managers/apiManager';
 import * as GameManager from '../../../managers/gameManager';
-import * as TimeManager from '../../../managers/timeManager';
 import * as ResourceManager from '../../../managers/resourceManager/resourceManager';
-import * as EventManager from '../../../managers/eventManager/eventManager';
 import * as Greenhouse from '../greenhouse';
 import * as PlayerController from '../../playerController/playerController';
 import * as MusicGenerator from '../../../generators/musicGenerator/musicGenerator';
 import Plantsong from '../Plantsong';
+import { INoteSequence } from '@magenta/music/es6';
 
 export const object = new THREE.Group();
 
@@ -19,29 +19,6 @@ let rightLever!: THREE.Object3D;
 let activeLever: THREE.Object3D | undefined;
 
 export let combining = false;
-
-const menu = document.createElement('div');
-menu.classList.add('combine-waiting-menu');
-menu.style.display = 'none';
-document.body.appendChild(menu);
-
-const loadingLabel = document.createElement('h2');
-loadingLabel.classList.add('combine-waiting-label');
-loadingLabel.innerText =
-  'Please wait while the plants are combined together and the children are generated';
-menu.appendChild(loadingLabel);
-
-const loadingAnimSources = [
-  'resources/ui/plant-grow/0.png',
-  'resources/ui/plant-grow/1.png',
-  'resources/ui/plant-grow/2.png',
-  'resources/ui/plant-grow/3.png',
-];
-const loadingAnim = document.createElement('img');
-loadingAnim.classList.add('plant-grow-animation');
-loadingAnim.src = loadingAnimSources[0];
-loadingAnim.alt = 'A growing plant.';
-menu.appendChild(loadingAnim);
 
 export function init(): void {
   object.copy((ResourceManager.items.combinatorMachineModel as GLTF).scene);
@@ -90,8 +67,7 @@ export function update(): void {
     cobmine();
   }
   if (combining) {
-    const index = Math.floor((TimeManager.elapsed * 1.5 / 1000) % 4);
-    loadingAnim.src = loadingAnimSources[index];
+    // do some cool animations
   }
 }
 
@@ -175,12 +151,6 @@ function stopDragging(): void {
 async function cobmine(): Promise<void> {
   // set the combining flag to true to trigger animations
   combining = true;
-  // show the menu
-  menu.style.display = 'flex';
-  // pause the game
-  GameManager.pause();
-  // let the time manager still update this element only
-  EventManager.addEventListener('update', update);
 
   // clear out all the workbenches in the greenhouse
   for (const bench of Greenhouse.workbenches) {
@@ -198,11 +168,36 @@ async function cobmine(): Promise<void> {
     1 - leftLeverAmount / (rightLeverAmount * 2);
 
   // decode the plantsongs that will be combined
-  const sequenceA = await MusicGenerator.decode(plantsongs[0]!.encoding);
-  const sequenceB = await MusicGenerator.decode(plantsongs[1]!.encoding);
+  const parents = {
+    a: await MusicGenerator.decode(plantsongs[0]!.encoding),
+    b: await MusicGenerator.decode(plantsongs[1]!.encoding),
+  };
 
-  // combine the sequences with the music generator
-  const sequences = await MusicGenerator.combine(sequenceA, sequenceB);
+  // combine the sequences with the api manager
+  const sequences: INoteSequence[] = [];
+  const parameters = {
+    balance: MusicGenerator.parameters.balance,
+    similarity: MusicGenerator.parameters.similarity,
+    temperature: MusicGenerator.parameters.temperature,
+  };
+  for (let i = 0; i < 9; i++) {
+    const response = await ApiManager.post('combine', { parents, parameters });
+    if (response instanceof Object && response.child instanceof Object) {
+      try {
+        sequences.push(response.child as INoteSequence);
+      } catch (e) {
+        console.error(
+          `couldn't combine plants, response.child is not a note sequence. ${response.child}`);
+        return;
+      }
+    } else if (response instanceof Object && typeof response.error === 'string') {
+      console.error(`couldn't combine plants, api response: '${response.error}'`);
+      return;
+    } else {
+      console.error(`couldn't combine plants, api response: '${response}'`);
+      return;
+    }
+  }
 
   // find a random bench to put a plant on, encode the sequence,
   // create a plant out of the encoding, and rinse and repeat
@@ -231,10 +226,4 @@ async function cobmine(): Promise<void> {
 
   // return the combining flag to false at the end of the method
   combining = false;
-  // hide the menu
-  menu.style.display = 'none';
-  // stop the specific listen event for update so that theres no double update being called
-  EventManager.removeEventListener('update', update);
-  // resume the game
-  GameManager.play();
 }

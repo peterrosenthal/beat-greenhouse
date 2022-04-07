@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as ApiManager from './apiManager';
 import * as RenderManager from './renderManager';
 import * as EventManager from './eventManager/eventManager';
 import * as PlayerController from '../world/playerController/playerController';
@@ -33,6 +34,7 @@ export function updateAllMaterials(): void {
 
 export function init(): void {
   RenderManager.setupPostprocessing();
+  ApiManager.init();
 
   Environment.init();
   PlayerController.init();
