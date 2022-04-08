@@ -563,10 +563,10 @@ function generateNodes(
     if (node.children.length === 0) {
       let growth = parameters.growth.thickness.fast;
       let delta = 0;
-      let current = node;
+      let current: PlantNode | undefined = node;
       let previous: PlantNode | undefined;
       let safety = 0;
-      while (current.parent !== undefined) {
+      while (current !== undefined) {
         if (safety > parameters.growth.iterations) {
           console.warn('The tree must have formed a loop somewhere!');
           break;
@@ -592,6 +592,7 @@ function generateNodes(
           // if no combination is happening then we just have to add delta
           current.radius += delta;
         }
+        current.radius = THREE.MathUtils.clamp(current.radius, 0, 0.5);
 
         delta += growth;
         previous = current;

@@ -109,7 +109,6 @@ export function findPlantsong(object: THREE.Object3D): Plantsong | undefined {
 
 export function filterPlantsongs(plantsong: Plantsong): void {
   plantsongs = plantsongs.filter(function(plant: Plantsong) { return plant !== plantsong; });
-  console.log(plantsongs.length);
 }
 
 export function findBench(object: THREE.Object3D): Bench | undefined {
