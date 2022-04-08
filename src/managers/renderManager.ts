@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 import EdgeDetectShader from '../shaders/EdgeDetect/EdgeDetectShader';
 import ScreenSpaceDepthShader from '../shaders/ScreenSpaceDepth/ScreenSpaceDepthShader';
 import * as GameManager from './gameManager';
@@ -92,7 +93,6 @@ const renderTargets = {
     ),
   },
 };
-renderTargets.composer.samples = 2;
 
 export const composer = new EffectComposer(renderer, renderTargets.composer);
 composer.setSize(SizesManager.width, SizesManager.height);
@@ -118,22 +118,36 @@ export function setupPostprocessing(): void {
     renderTargets.fullScene.normals.texture;
   edgeDetectFullScenePass.uniforms.u_colorTexture.value =
     renderTargets.fullScene.color.texture;
-  edgeDetectFullScenePass.uniforms.u_sampleSize.value = 0.0004;
-  edgeDetectFullScenePass.uniforms.u_lowerCutoff.value = 0.5;
-  edgeDetectFullScenePass.uniforms.u_upperCutoff.value = 0.75;
+  edgeDetectFullScenePass.uniforms.u_sampleSize.value =
+    new THREE.Vector2(1 / SizesManager.width, 1 / SizesManager.height);
+  edgeDetectFullScenePass.uniforms.u_depthCutoff.value = 0.28;
+  edgeDetectFullScenePass.uniforms.u_normalsCutoff.value = 0.32 ;
+  edgeDetectFullScenePass.uniforms.u_colorCutoff.value = 0.2;
+  edgeDetectFullScenePass.uniforms.u_thickness.value = 0.95;
   composer.addPass(edgeDetectFullScenePass);
 
   const edgeDetectHighlightPass = new ShaderPass(EdgeDetectShader, 'u_incomingTexture');
-  edgeDetectHighlightPass.uniforms.u_color.value = new THREE.Color(0x00eeff);
+  edgeDetectHighlightPass.uniforms.u_color.value = new THREE.Color(0xccee55);
   edgeDetectHighlightPass.uniforms.u_depthTexture.value =
     renderTargets.highlights.depth.texture;
   edgeDetectHighlightPass.uniforms.u_normalsTexture.value =
     renderTargets.highlights.normals.texture;
   edgeDetectHighlightPass.uniforms.u_colorTexture.value =
     renderTargets.highlights.color.texture;
-  edgeDetectHighlightPass.uniforms.u_lowerCutoff.value = 0.15;
-  edgeDetectHighlightPass.uniforms.u_upperCutoff.value = 0.4;
+  edgeDetectHighlightPass.uniforms.u_sampleSize.value =
+    new THREE.Vector2(1 / SizesManager.width, 1 / SizesManager.height);
+  edgeDetectHighlightPass.uniforms.u_depthCutoff.value = 0.25;
+  edgeDetectHighlightPass.uniforms.u_normalsCutoff.value = 0.2;
+  edgeDetectHighlightPass.uniforms.u_colorCutoff.value = 0.18;
+  edgeDetectHighlightPass.uniforms.u_thickness.value = 1.15;
   composer.addPass(edgeDetectHighlightPass);
+
+  const fxaaPass = new ShaderPass(FXAAShader);
+  fxaaPass.material.uniforms.resolution.value.x =
+    1 / (SizesManager.width * SizesManager.pixelRatio);
+  fxaaPass.material.uniforms.resolution.value.y =
+    1 / (SizesManager.height * SizesManager.pixelRatio);
+  composer.addPass(fxaaPass);
 
   const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
   composer.addPass(gammaCorrectionPass);
