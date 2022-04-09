@@ -23,8 +23,13 @@ export function init(): void {
 }
 
 export function onMachineHover(intersection: THREE.Intersection): void {
-  // first check if it's intersecting the button
+  // first check if it's intersecting the download button
   const intersectedObject = intersection.object;
+  if (intersectedObject.name === 'download_button') {
+    GameManager.highlightedObjects.push(intersectedObject);
+    return;
+  }
+  // then check if it's intersecting the play button
   if (intersectedObject.name === 'play_button') {
     GameManager.highlightedObjects.push(intersectedObject);
     return;
@@ -45,8 +50,13 @@ export function onMachineHover(intersection: THREE.Intersection): void {
 }
 
 export function onMachineClick(intersection: THREE.Intersection): void {
-  // first check if it's intersecting the button
+  // first check if it's intersecting the download button
   const intersectedObject = intersection.object;
+  if (intersectedObject.name === 'download_button') {
+    downloadPlantsong();
+    return;
+  }
+  // then check if it's intersecting the button
   if (intersectedObject.name === 'play_button') {
     playPlantsong();
     return;
@@ -83,6 +93,26 @@ async function playPlantsong(): Promise<void> {
   while (player.isPlaying()) {
     await delay(500);
   }
+}
+
+async function downloadPlantsong(): Promise<void> {
+  if (!(plantsong?.encoding instanceof Float32Array)) {
+    return;
+  }
+  const sequence = await MusicGenerator.decode(plantsong?.encoding);
+  for (const note of sequence.notes!) {
+    note.velocity = 100;
+  }
+  const midi = await mm.sequenceProtoToMidi(sequence);
+  const blob = new Blob([midi], { type: 'audio/midi' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'beat-greenhouse-export.midi';
+  document.body.appendChild(a);
+  a.style.display = 'none';
+  a.click();
+  a.remove();
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types

@@ -258,6 +258,9 @@ function handleBenchIntersections(
 }
 
 function onMouseDown(): void {
+  if (!GameManager.isPlaying) {
+    return;
+  }
   raycaster.setFromCamera(new THREE.Vector2(), camera);
   const intersections = raycaster.intersectObject(GameManager.scene, true);
   let intersected = handlePlantsongIntersections(intersections, true);
