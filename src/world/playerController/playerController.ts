@@ -275,9 +275,6 @@ function onKeyDown(event: KeyboardEvent): void {
 
 function onKeyUp(event: KeyboardEvent): void {
   updateMovementState(event.code, false);
-  if (event.code === 'Escape') {
-    lockControls();
-  }
 }
 
 function updateMovementState(code: string, value: boolean): void {

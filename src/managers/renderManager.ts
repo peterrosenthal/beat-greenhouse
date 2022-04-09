@@ -123,7 +123,7 @@ export function setupPostprocessing(): void {
   edgeDetectFullScenePass.uniforms.u_depthCutoff.value = 0.28;
   edgeDetectFullScenePass.uniforms.u_normalsCutoff.value = 0.32 ;
   edgeDetectFullScenePass.uniforms.u_colorCutoff.value = 0.2;
-  edgeDetectFullScenePass.uniforms.u_thickness.value = 0.95;
+  edgeDetectFullScenePass.uniforms.u_thickness.value = 2;
   composer.addPass(edgeDetectFullScenePass);
 
   const edgeDetectHighlightPass = new ShaderPass(EdgeDetectShader, 'u_incomingTexture');
@@ -139,8 +139,11 @@ export function setupPostprocessing(): void {
   edgeDetectHighlightPass.uniforms.u_depthCutoff.value = 0.25;
   edgeDetectHighlightPass.uniforms.u_normalsCutoff.value = 0.2;
   edgeDetectHighlightPass.uniforms.u_colorCutoff.value = 0.18;
-  edgeDetectHighlightPass.uniforms.u_thickness.value = 1.15;
+  edgeDetectHighlightPass.uniforms.u_thickness.value = 1.3;
   composer.addPass(edgeDetectHighlightPass);
+
+  const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+  composer.addPass(gammaCorrectionPass);
 
   const fxaaPass = new ShaderPass(FXAAShader);
   fxaaPass.material.uniforms.resolution.value.x =
@@ -148,9 +151,6 @@ export function setupPostprocessing(): void {
   fxaaPass.material.uniforms.resolution.value.y =
     1 / (SizesManager.height * SizesManager.pixelRatio);
   composer.addPass(fxaaPass);
-
-  const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
-  composer.addPass(gammaCorrectionPass);
 }
 
 export function resize(): void {
