@@ -22,6 +22,7 @@ let rightLever!: THREE.Object3D;
 let activeLever: THREE.Object3D | undefined;
 let blueTube!: THREE.Mesh;
 let orangeTube!: THREE.Mesh;
+let computerScreen!: THREE.Mesh;
 
 const leverMinY = 1.872;
 const leverMaxY = 2.325;
@@ -55,19 +56,45 @@ export function init(): void {
       case 'orange_tube':
         orangeTube = child as THREE.Mesh;
         break;
+      case 'computer_screen':
+        computerScreen = child as THREE.Mesh;
+        break;
     }
   });
-  const blueGradientMaterial = new THREE.ShaderMaterial(AnimatedGradientShader);
-  blueGradientMaterial.uniforms.u_time.value = 0;
-  blueGradientMaterial.uniforms.u_baseColor.value = new THREE.Color(0x72a9e7);
-  blueGradientMaterial.uniforms.u_gradientColor.value = new THREE.Color(0x00dfb9);
+  /* eslint-disable camelcase */
+  const blueGradientMaterial = new THREE.ShaderMaterial({
+    vertexShader: AnimatedGradientShader.vertexShader,
+    fragmentShader: AnimatedGradientShader.fragmentShader,
+    uniforms: {
+      u_time: { value: 0 },
+      u_baseColor: { value: new THREE.Color(0x72a9e7) },
+      u_gradColor: { value: new THREE.Color(0x00dfb9) },
+    },
+  });
   blueTube.material = blueGradientMaterial;
 
-  const orangeGradientMaterial = new THREE.ShaderMaterial(AnimatedGradientShader);
-  orangeGradientMaterial.uniforms.u_time.value = 0;
-  orangeGradientMaterial.uniforms.u_baseColor.value = new THREE.Color(0xe74c68);
-  orangeGradientMaterial.uniforms.u_gradientColor.value = new THREE.Color(0xdd6300);
+  const orangeGradientMaterial = new THREE.ShaderMaterial({
+    vertexShader: AnimatedGradientShader.vertexShader,
+    fragmentShader: AnimatedGradientShader.fragmentShader,
+    uniforms: {
+      u_time: { value: 0 },
+      u_baseColor: { value: new THREE.Color(0xe74c68) },
+      u_gradColor: { value: new THREE.Color(0xdd6300) },
+    },
+  });
   orangeTube.material = orangeGradientMaterial;
+
+  const orangeBlueGradientMaterial = new THREE.ShaderMaterial({
+    vertexShader: AnimatedGradientShader.vertexShader,
+    fragmentShader: AnimatedGradientShader.fragmentShader,
+    uniforms: {
+      u_time: { value: 0 },
+      u_baseColor: { value: new THREE.Color(0x72a9e7) },
+      u_gradColor: { value: new THREE.Color(0xdd6300) },
+    },
+  });
+  computerScreen.material = orangeBlueGradientMaterial;
+  /* eslint-enable camelcase */
 }
 
 export function update(): void {
@@ -85,6 +112,8 @@ export function update(): void {
   if (combining) {
     (blueTube.material as ShaderMaterial).uniforms.u_time.value += TimeManager.delta / 1000;
     (orangeTube.material as ShaderMaterial).uniforms.u_time.value += TimeManager.delta / 1000;
+    (computerScreen.material as ShaderMaterial).uniforms.u_time.value +=
+      TimeManager.delta / 1000;
   }
 }
 
