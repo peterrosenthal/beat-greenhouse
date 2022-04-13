@@ -10,6 +10,7 @@ import * as GameManager from './gameManager';
 import * as SizesManager from './sizesManager';
 import * as TimeManager from './timeManager';
 import * as PlayerController from '../world/playerController/playerController';
+import * as Grass from '../world/grass';
 
 let postprocessing = false;
 
@@ -180,6 +181,8 @@ export function render(): void {
     return;
   }
 
+  Grass.prepareForOutlineRender();
+
   renderer.setRenderTarget(renderTargets.fullScene.depth);
   GameManager.scene.overrideMaterial = depthMaterial;
   renderer.clear();
@@ -213,6 +216,8 @@ export function render(): void {
   renderer.render(GameManager.highlightedScene, PlayerController.camera);
 
   GameManager.scene.add(PlayerController.camera);
+
+  Grass.prepareForRegularRender();
 
   renderer.setRenderTarget(null);
   renderer.clear();
