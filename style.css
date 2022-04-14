@@ -1,6 +1,14 @@
+@font-face {
+  font-family: 'comichelvetic';
+  src: url('resources/ui/fonts/comichelvetic.woff2') format('woff2'),
+       url('resources/ui/fonts/comichelvetic.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   margin: 0;
-  font-family: sans-serif;
+  font-family: 'comichelvetic', sans-serif;
 }
 
 html, body {
