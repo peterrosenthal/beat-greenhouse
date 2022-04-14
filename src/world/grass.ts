@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import * as ResourceManager from '../managers/resourceManager/resourceManager';
 import * as GameManager from '../managers/gameManager';
 
-const material = new THREE.MeshStandardMaterial({ color: 0x2aea3c });
+const material = new THREE.MeshStandardMaterial({ color: 0x0a9513 });
 const grass = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), material);
 grass.rotation.x = -Math.PI / 2;
 
