@@ -79,6 +79,24 @@ export function getDefaultParameters(): PlantParameters {
       phiRandomness: 0.1,
       verticalDensity: 1,
     },
+    materials: {
+      branches: {
+        color: {
+          hue: 0.0854,
+          sat: 0.6119,
+          lit: 0.2627,
+        },
+        roughness: 0.8,
+      },
+      leaves: {
+        color: {
+          hue: 0.3788,
+          sat: 0.4208,
+          lit: 0.3588,
+        },
+        roughness: 0.8,
+      },
+    },
   };
 }
 
@@ -104,8 +122,8 @@ export function generateRandomLatentSpaceVector(): Float32Array {
 
 export function getParametersFromEncoding(encoding: Float32Array): PlantParameters {
   // step 1: reduce encoding into however many dimensions we can actually make use of
-  // currently that number of dimensions is... 36... I think
-  const dimensions = 36;
+  // currently that number of dimensions is... 44... I think
+  const dimensions = 44;
   const reduced = new Float32Array(dimensions);
   for (let i = 0; i < encoding.length; i++) {
     const power = Math.ceil((i + 1) / dimensions);
@@ -188,6 +206,24 @@ export function getParametersFromEncoding(encoding: Float32Array): PlantParamete
       phiAverage: reduced[33] * Math.PI + Math.PI,
       phiRandomness: reduced[34] * 0.1 + 0.1,
       verticalDensity: reduced[35] * 1.2 + 1.5,
+    },
+    materials: {
+      branches: {
+        color: {
+          hue: ((reduced[36] + 1) * 4) % 1,
+          sat: reduced[37] * 0.3 + 0.7,
+          lit: reduced[38] * 0.2 + 0.35,
+        },
+        roughness: reduced[39] * 0.4 + 0.6,
+      },
+      leaves: {
+        color: {
+          hue: ((reduced[40] + 1) * 4) % 1,
+          sat: reduced[41] * 0.3 + 0.7,
+          lit: reduced[42] * 0.2 + 0.35,
+        },
+        roughness: reduced[43] * 0.4 + 0.6,
+      },
     },
   };
 }

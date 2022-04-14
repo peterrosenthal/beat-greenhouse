@@ -17,12 +17,16 @@ export default class Plant {
     const branches = new THREE.Group();
     this.object.add(branches);
 
-    // TODO: add color and roughness to plant parameters
-    const branchMaterial = new THREE.MeshStandardMaterial({
-      color: 0x6c441a,
-      roughness: 0.8,
-      side: THREE.DoubleSide,
-    });
+    let hue = Math.round(parameters.materials.branches.color.hue * 360);
+    let sat = Math.round(parameters.materials.branches.color.sat * 100);
+    let lit = Math.round(parameters.materials.branches.color.lit * 100);
+    let roughness = parameters.materials.branches.roughness;
+    let color = new THREE.Color(`hsl(${hue}, ${sat}%, ${lit}%)`);
+    console.log(hue);
+    console.log(sat);
+    console.log(lit);
+    console.log(color.getHexString());
+    const branchMaterial = new THREE.MeshStandardMaterial({ color, roughness });
 
     // render the branches of the plant
     // starting by finding the root node of the tree
@@ -52,11 +56,13 @@ export default class Plant {
     const leaves = new THREE.Group();
     this.object.add(leaves);
 
-    // TODO: add leaf color and roughness to plant parameters
     const leafGeometry = new THREE.SphereGeometry(1, 32, 32);
-    const leafMaterial = new THREE.MeshStandardMaterial({
-      color: 0x35824a,
-    });
+    hue = Math.round(parameters.materials.leaves.color.hue * 360);
+    sat = Math.round(parameters.materials.leaves.color.sat * 100);
+    lit = Math.round(parameters.materials.leaves.color.lit * 100);
+    roughness = parameters.materials.leaves.roughness;
+    color = new THREE.Color(`hsl(${hue}, ${sat}%, ${lit}%)`);
+    const leafMaterial = new THREE.MeshStandardMaterial({ color, roughness });
 
     for (const node of this.nodes) {
       const parent = node.parent?.position ?? new THREE.Vector3();
