@@ -119,7 +119,7 @@ function onFileReaderLoad(): void {
   if (fileReader.result instanceof ArrayBuffer) {
     const sequence = mm.sequences.quantizeNoteSequence(
       mm.midiToSequenceProto(fileReader.result),
-      2,
+      4,
     );
     createPlant(sequence);
   }
