@@ -18,7 +18,7 @@ float detectEdge(sampler2D sampleTexture, float cutoff) {
   float dist = 0.0;
   float sampleLength = length(u_sampleSize);
   for (vec2 sampleSize = vec2(0.0); length(sampleSize) <= sampleLength; sampleSize += stepSize) {
-    dist = length(sampleSize) / sampleLength;
+    dist = length(sampleSize) / (sampleLength * 0.9);
     vec2 halfSampleSize = sampleSize * u_thickness * 0.5;
     vec2 samples[4];
     samples[0] = v_uv - halfSampleSize;
@@ -37,7 +37,7 @@ float detectEdge(sampler2D sampleTexture, float cutoff) {
     }
   }
   
-  return 1.0 - dist;
+  return clamp(1.0 - dist, 0.0, 1.0);
 }
 
 void main() {
