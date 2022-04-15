@@ -10,6 +10,8 @@ export async function generatePlant(parameters: PlantParameters): Promise<Plant>
   // step 1: generate attraction points
   const attractors = generateInitialAttractors(parameters);
 
+  console.log(parameters.leaves.phiAverage);
+
   // step 2: generate nodes from attractors
   const nodes = generateNodes(attractors, parameters);
 
@@ -122,6 +124,12 @@ export function generateRandomLatentSpaceVector(): Float32Array {
 }
 
 export function getParametersFromEncoding(encoding: Float32Array): PlantParameters {
+  // first define a little helper function that can make a
+  // random distrubution more or less dense using powers
+  function signedAbsPow(value: number, power: number): number {
+    return Math.sign(value) * Math.pow(Math.abs(value), power);
+  }
+
   // step 1: reduce encoding into however many dimensions we can actually make use of
   // currently that number of dimensions is... 45... I think
   const dimensions = 45;
@@ -144,32 +152,32 @@ export function getParametersFromEncoding(encoding: Float32Array): PlantParamete
   return {
     envelope: {
       radius: (reduced[0] + 1) * 7,
-      height: (reduced[1] + 1) * 4,
+      height: (signedAbsPow(reduced[1], 0.2) + 1) * 2.5 + 1.25,
       position: new THREE.Vector3(
-        Math.sign(reduced[2]) * Math.sqrt(Math.abs(reduced[1])),
-        reduced[3] * 0.2 + 0.2,
-        Math.sign(reduced[4]) * Math.sqrt(Math.abs(reduced[3])),
+        signedAbsPow(reduced[2], 0.25),
+        reduced[3] * 0.05 + 0.4,
+        signedAbsPow(reduced[4], 0.25),
       ),
       handles: {
         bot: {
-          first: reduced[5] * 0.3 + 0.3,
-          second: reduced[6] * 0.3 + 0.3,
-          third: reduced[7] * 0.3 + 0.3,
+          first: signedAbsPow(reduced[5], 0.25) * 0.3 + 0.3,
+          second: signedAbsPow(reduced[6], 0.25) * 0.3 + 0.3,
+          third: signedAbsPow(reduced[7], 0.25) * 0.3 + 0.3,
         },
         mid: {
-          first: reduced[8] * 0.35 + 0.5,
-          second: reduced[9] * 0.35 + 0.5,
-          third: reduced[10] * 0.35 + 0.5,
+          first: signedAbsPow(reduced[8], 0.25) * 0.35 + 0.5,
+          second: signedAbsPow(reduced[9], 0.25) * 0.35 + 0.5,
+          third: signedAbsPow(reduced[10], 0.25) * 0.35 + 0.5,
         },
         top: {
-          first: reduced[11] * 0.5 + 0.5,
-          second: reduced[12] * 0.5 + 0.5,
-          third: reduced[13] * 0.5 + 0.5,
+          first: signedAbsPow(reduced[11], 0.25) * 0.5 + 0.5,
+          second: signedAbsPow(reduced[12], 0.25) * 0.5 + 0.5,
+          third: signedAbsPow(reduced[13], 0.25) * 0.5 + 0.5,
         },
         heights: {
-          bot: reduced[14] * 0.09 + 0.12,
-          mid: reduced[15] * 0.21 + 0.54,
-          top: reduced[16] * 0.04 + 0.95,
+          bot: signedAbsPow(reduced[14], 0.25) * 0.09 + 0.12,
+          mid: signedAbsPow(reduced[15], 0.25) * 0.21 + 0.54,
+          top: signedAbsPow(reduced[16], 0.25) * 0.04 + 0.95,
         },
       },
     },
@@ -189,42 +197,43 @@ export function getParametersFromEncoding(encoding: Float32Array): PlantParamete
           },
         },
       },
-      radius: reduced[24] * 2.5 + 3,
-      kill: (reduced[24] * 2.5 + 3) * (reduced[24] * 0.5 + 0.5),
+      radius: signedAbsPow(reduced[24], 0.25) * 1.5 + 1.8,
+      kill: (signedAbsPow(reduced[24], 0.25) * 1.5 + 1.8) *
+        (signedAbsPow(reduced[25], 0.25) * 0.3 + 0.4),
     },
     growth: {
-      iterations: Math.round(reduced[26] * 40 + 70),
-      reach: reduced[27] * 0.2 + 0.25,
+      iterations: Math.round(reduced[26] * 45 + 60),
+      reach: reduced[27] * 0.15 + 0.2,
       thickness: {
-        fast: reduced[28] * 0.0025 + 0.005,
-        slow: reduced[29] * 0.00005 + 0.0002,
+        fast: signedAbsPow(reduced[28], 0.25) * 0.0025 + 0.0052,
+        slow: signedAbsPow(reduced[29], 0.5) * 0.00005 + 0.0002,
         combination: reduced[30] + 3,
       },
     },
     leaves: {
-      maxBranchThickness: reduced[31] * 0.012 + 0.011,
+      maxBranchThickness: signedAbsPow(reduced[31], 0.2) * 0.012 + 0.011,
       size: reduced[32] * 0.2 + 0.2,
-      theta: (reduced[33] * 3 * Math.PI + Math.PI) % (Math.PI * 2),
-      phiAverage: reduced[34] * Math.PI + Math.PI,
-      phiRandomness: reduced[35] * 0.1 + 0.1,
-      verticalDensity: reduced[36] * 1.2 + 1.5,
+      theta: (signedAbsPow(reduced[33], 0.125) * 3 * Math.PI + Math.PI) % (Math.PI * 2),
+      phiAverage: signedAbsPow(reduced[34], 0.2) * Math.PI / 2 + Math.PI / 2,
+      phiRandomness: signedAbsPow(reduced[35], 0.25) * 0.25 + 0.25,
+      verticalDensity: signedAbsPow(reduced[36], 0.125) * 1.3 + 2.2,
     },
     materials: {
       branches: {
         color: {
-          hue: ((reduced[37] + 1) * 60) % 1,
-          sat: Math.sign(reduced[38]) * Math.sqrt(Math.abs(reduced[38])) * 0.3 + 0.7,
-          lit: Math.sign(reduced[39]) * Math.sqrt(Math.abs(reduced[39])) * 0.2 + 0.35,
+          hue: ((reduced[37] + 1) * 50) % 1,
+          sat: signedAbsPow(reduced[38], 0.2) * 0.5 + 0.55,
+          lit: signedAbsPow(reduced[39], 0.2) * 0.45 + 0.45,
         },
-        roughness: reduced[40] * 0.4 + 0.6,
+        roughness: signedAbsPow(reduced[40], 0.25) * 0.4 + 0.6,
       },
       leaves: {
         color: {
-          hue: ((reduced[41] + 1) * 60) % 1,
-          sat: Math.sign(reduced[42]) * Math.sqrt(Math.abs(reduced[42])) * 0.3 + 0.7,
-          lit: Math.sign(reduced[43]) * Math.sqrt(Math.abs(reduced[43])) * 0.2 + 0.35,
+          hue: ((reduced[41] + 1) * 50) % 1,
+          sat: signedAbsPow(reduced[42], 0.2) * 0.45 + 0.7,
+          lit: signedAbsPow(reduced[43], 0.2) * 0.45 + 0.45,
         },
-        roughness: reduced[44] * 0.4 + 0.6,
+        roughness: signedAbsPow(reduced[44], 0.25) * 0.4 + 0.6,
       },
     },
   };
@@ -237,8 +246,8 @@ function generateInitialAttractors(parameters = getDefaultParameters()): THREE.V
   // or they might become based upon other externally controlled factors
   // but for now they are just internal constants
   const resolution = {
-    horizontal: 8000,
-    vertical: 120,
+    horizontal: 10000,
+    vertical: 160,
   };
 
 

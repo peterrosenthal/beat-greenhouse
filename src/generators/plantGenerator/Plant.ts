@@ -26,7 +26,11 @@ export default class Plant {
     console.log(sat);
     console.log(lit);
     console.log(color.getHexString());
-    const branchMaterial = new THREE.MeshStandardMaterial({ color, roughness });
+    const branchMaterial = new THREE.MeshStandardMaterial({
+      color,
+      roughness,
+      side: THREE.BackSide,
+    });
 
     // render the branches of the plant
     // starting by finding the root node of the tree
