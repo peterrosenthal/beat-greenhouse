@@ -222,16 +222,16 @@ export function getParametersFromEncoding(encoding: Float32Array): PlantParamete
       branches: {
         color: {
           hue: ((reduced[37] + 1) * 50) % 1,
-          sat: signedAbsPow(reduced[38], 0.2) * 0.5 + 0.55,
-          lit: signedAbsPow(reduced[39], 0.2) * 0.45 + 0.45,
+          sat: signedAbsPow(reduced[38], 0.1) * 0.5 + 0.55,
+          lit: signedAbsPow(reduced[39], 0.1) * 0.45 + 0.45,
         },
         roughness: signedAbsPow(reduced[40], 0.25) * 0.4 + 0.6,
       },
       leaves: {
         color: {
           hue: ((reduced[41] + 1) * 50) % 1,
-          sat: signedAbsPow(reduced[42], 0.2) * 0.45 + 0.7,
-          lit: signedAbsPow(reduced[43], 0.2) * 0.45 + 0.45,
+          sat: signedAbsPow(reduced[42], 0.1) * 0.45 + 0.7,
+          lit: signedAbsPow(reduced[43], 0.1) * 0.45 + 0.45,
         },
         roughness: signedAbsPow(reduced[44], 0.25) * 0.4 + 0.6,
       },

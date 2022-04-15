@@ -33,6 +33,13 @@ export default class Plantsong {
   }
 
   public highlight(): void {
+    if (CombinatorMachine.combining) {
+      for (const plansong of CombinatorMachine.plantsongs) {
+        if (plansong === this) {
+          return;
+        }
+      }
+    }
     GameManager.highlightedObjects.push(this.object);
   }
 
@@ -46,6 +53,9 @@ export default class Plantsong {
       }
       for (let i = 0; i < CombinatorMachine.plantsongs.length; i++) {
         if (CombinatorMachine.plantsongs[i] === this) {
+          if (CombinatorMachine.combining) {
+            return;
+          }
           CombinatorMachine.setPlantsong(i, undefined);
         }
       }
