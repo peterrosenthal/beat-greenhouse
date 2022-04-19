@@ -241,7 +241,7 @@ async function combine(): Promise<void> {
     temperature: MusicGenerator.parameters.temperature,
   };
   let tries = 0;
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 12; i++) {
     try {
       const response = await ApiManager.post('combine', { parents, parameters });
       if (response instanceof Object && response.child instanceof Object) {

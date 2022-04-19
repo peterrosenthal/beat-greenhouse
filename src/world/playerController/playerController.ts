@@ -117,6 +117,16 @@ export function update(): void {
   // update controls
   controls.moveRight(velocity.x * delta);
   controls.moveForward(velocity.z * delta);
+  
+  // check bounds
+  // eslint-disable-next-line max-len
+  const lowerX = camera.position.x > 6.6 && camera.position.z < 3.6 && camera.position.z > -0.7 ? 7 : -19.4;
+  const upperX = camera.position.z > 6.7 ? 16.1 : 16.4;
+  const lowerZ = camera.position.z < 0 ? -4.7 : camera.position.x < 6.6 ? 3.6 : -4.7;
+  // eslint-disable-next-line max-len
+  const upperZ = camera.position.x < 6.6 && camera.position.z < 0 ? -0.7 : camera.position.x < 9.5 && camera.position.x > 7 ? 9.4 : 7.1;
+  camera.position.x = THREE.MathUtils.clamp(camera.position.x, lowerX, upperX);
+  camera.position.z = THREE.MathUtils.clamp(camera.position.z, lowerZ, upperZ);
 
   /* mouse intersection behavior */
   raycaster.setFromCamera(new THREE.Vector2(), camera);
@@ -130,7 +140,7 @@ export function update(): void {
   }
 
   if (plantsong instanceof Plantsong) {
-    plantsong.object.position.set(0, -3, -4.5);
+    plantsong.object.position.set(0, -1, -4.5);
     camera.localToWorld(plantsong.object.position);
   }
 }
