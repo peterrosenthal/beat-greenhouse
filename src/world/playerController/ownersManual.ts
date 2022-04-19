@@ -48,6 +48,8 @@ const pages = [
   document.createElement('div'),
   document.createElement('div'),
   document.createElement('div'),
+  document.createElement('div'),
+  document.createElement('div'),
 ];
 for (const page of pages) {
   page.classList.add('owners-manual-page');
@@ -79,44 +81,66 @@ const basicInteractInstructions = document.createElement('li');
 basicInteractInstructions.innerText = 'Click on any highlighted object to interact with it.';
 basicInstructions.appendChild(basicInteractInstructions);
 
-// page 1: basic greenhouse elements
-const basicGreenhouseElementsHeader = document.createElement('h1');
-basicGreenhouseElementsHeader.innerText = 'Basic Greenhouse Elements';
-pages[1].appendChild(basicGreenhouseElementsHeader);
-const plantsongHeader = document.createElement('h2');
-plantsongHeader.innerText = 'The Plantsong';
+// page 1: plantsongs
+const plantsongHeader = document.createElement('h1');
+plantsongHeader.innerText = 'Plantsongs';
 pages[1].appendChild(plantsongHeader);
 const plantsongParagraph = document.createElement('p');
 // eslint-disable-next-line max-len
 plantsongParagraph.innerText = 'Plantsongs are what grow in the Beat Greenhouse, and they are both plants and songs at the same time. Plantsongs can be cultivated, chosen, and selectively bred for desireable characteristics just like any plant, but those characteristics aren\'t just limited to the visual plant-like aspects of the plantsong, they could be the song aspects too! You pick up a plantsong by clicking on it. Plantsongs can be imported from the Genesis Machine, and stored on the benches. You can play back the song component of a plantsong with the Interpreter Machine, or even use that same machine to download that song as a MIDI file. And finally you can combine plantssongs together using the Combinator Machine.';
 pages[1].appendChild(plantsongParagraph);
-const benchesHeader = document.createElement('h2');
-benchesHeader.innerText = 'Benches';
-pages[1].appendChild(benchesHeader);
-const workbenchHeader = document.createElement('h3');
+const plantsongImage = document.createElement('img');
+plantsongImage.style.maxHeight = '20em';
+plantsongImage.src = 'resources/ui/owners-manual/plantsong.svg';
+plantsongImage.alt = 'An outline style illustration of a plantsong.';
+pages[1].appendChild(plantsongImage);
+
+// page 2: workbenches
+const workbenchHeader = document.createElement('h1');
 workbenchHeader.innerText = 'Workbenches';
-pages[1].appendChild(workbenchHeader);
+pages[2].appendChild(workbenchHeader);
+const workbenchImage = document.createElement('img');
+workbenchImage.src = 'resources/ui/owners-manual/workbench.svg';
+workbenchImage.alt = 'An outline style illustration of a workbench.';
+pages[2].appendChild(workbenchImage);
 const workbenchParagraph = document.createElement('p');
 // eslint-disable-next-line max-len
 workbenchParagraph.innerText = 'Workbenches are the simpler looking benches of the two types in the Beat Greenhouse. They only hold two plantsongs per bench, but they are going to be the benches you will work with the most in the greenhouse (hence the name). You can place any plantsong you like on an open and available bench spot, as long as you have a plantsong in your hands to place down. But be aware that if you place a plantsong that you really like on a workbench, it will disappear between generations, as the Combinator Machine needs the space to fill with the new plantsong children of the next generation.';
-pages[1].appendChild(workbenchParagraph);
-const showbenchHeader = document.createElement('h3');
+pages[2].appendChild(workbenchParagraph);
+
+// page 3: showbenches
+const showbenchHeader = document.createElement('h1');
 showbenchHeader.innerText = 'Showbenches';
+pages[3].appendChild(showbenchHeader);
 const showbenchParagraph = document.createElement('p');
 // eslint-disable-next-line max-len
 showbenchParagraph.innerText = 'Showbenches are for collecting, showing off, and saving the plantsongs that you really like and don\'t want to lose between generations. They can hold up to six plantsongs each, and have two levels so you can show off your plantsongs from various different angles. Any plantsong you place on a showbench will remain there until you close the tab or move it off of the bench yourself.';
-pages[1].appendChild(showbenchParagraph);
+pages[3].appendChild(showbenchParagraph);
+const showbenchImage = document.createElement('img');
+showbenchImage.src = 'resources/ui/owners-manual/showbench.svg';
+showbenchImage.alt = 'An outline style illustration of a showbench.';
+pages[3].appendChild(showbenchImage);
 
-// page 2: genesis machine
+// page 4: genesis machine
 const genesisMachineHeader = document.createElement('h1');
 genesisMachineHeader.innerText = 'The Genesis Machine';
-pages[2].appendChild(genesisMachineHeader);
+pages[4].appendChild(genesisMachineHeader);
+const genesisMachineImageTextContainer = document.createElement('div');
+genesisMachineImageTextContainer.classList.add('img-txt-container');
+pages[4].appendChild(genesisMachineImageTextContainer);
+const genesisMachineImage = document.createElement('img');
+genesisMachineImage.style.width = '20vw';
+genesisMachineImage.src = 'resources/ui/owners-manual/genesis-machine.svg';
+genesisMachineImage.alt = 'An outline style illustration of the genesis machine.';
+genesisMachineImageTextContainer.appendChild(genesisMachineImage);
+const genesisMachineTextContainer = document.createElement('div');
+genesisMachineImageTextContainer.appendChild(genesisMachineTextContainer);
 const genesisMachineParagraph = document.createElement('p');
 // eslint-disable-next-line max-len
 genesisMachineParagraph.innerText = 'The Genesis Machine allows the you to import any MIDI file you want into the game and it will be transformed into a beautiful plantsong. To use the Genesis Machine:';
-pages[2].appendChild(genesisMachineParagraph);
+genesisMachineTextContainer.appendChild(genesisMachineParagraph);
 const genesisMachineInstructions = document.createElement('ul');
-pages[2].appendChild(genesisMachineInstructions);
+genesisMachineTextContainer.appendChild(genesisMachineInstructions);
 const genesisComputerInstruction = document.createElement('li');
 // eslint-disable-next-line max-len
 genesisComputerInstruction.innerText = 'Click on the computer on the far right of the Genesis Machine table to open up the import dialogue';
@@ -130,16 +154,21 @@ const closeGenesisMachineInstruction = document.createElement('li');
 closeGenesisMachineInstruction.innerText = 'Click on the \'Close Genesis Machine\' button if it doesn\'t close automatically';
 genesisMachineInstructions.appendChild(closeGenesisMachineInstruction);
 
-// page 3: the interpreter machine
+// page 5: the interpreter machine
 const interpreterMachineHeader = document.createElement('h1');
 interpreterMachineHeader.innerText = 'The Interpeter Machine';
-pages[3].appendChild(interpreterMachineHeader);
+pages[5].appendChild(interpreterMachineHeader);
+const interpreterMachineImageTextContainer = document.createElement('div');
+interpreterMachineImageTextContainer.classList.add('img-txt-container');
+pages[5].appendChild(interpreterMachineImageTextContainer);
+const interpreterMachineTextContainer = document.createElement('div');
+interpreterMachineImageTextContainer.appendChild(interpreterMachineTextContainer);
 const interpreterMachineParagraph = document.createElement('p');
 // eslint-disable-next-line max-len
 interpreterMachineParagraph.innerText = 'The Interpreter Machine will interpret any plantsong as a song, and will either play that song back for you, or download the song as a MIDI file for you to import back into you usual music creating workflow. To use the Interpreter Machine:';
-pages[3].appendChild(interpreterMachineParagraph);
+interpreterMachineTextContainer.appendChild(interpreterMachineParagraph);
 const interpreterMachineInstructions = document.createElement('ul');
-pages[3].appendChild(interpreterMachineInstructions);
+interpreterMachineTextContainer.appendChild(interpreterMachineInstructions);
 const interpretPlantInstruction = document.createElement('li');
 // eslint-disable-next-line max-len
 interpretPlantInstruction.innerText = 'To get started: place a plantsong on top of the Interpreter Machine.';
@@ -152,17 +181,26 @@ const downloadPlantInstruction = document.createElement('li');
 // eslint-disable-next-line max-len
 downloadPlantInstruction.innerText = 'To download the plantsong as a MIDI file: click on the green downward pointing arrow on the right of the front face of the Interpreter Machine.';
 interpreterMachineInstructions.appendChild(downloadPlantInstruction);
+const interpreterMachineImage = document.createElement('img');
+interpreterMachineImage.style.width = '20vw';
+interpreterMachineImage.src = 'resources/ui/owners-manual/interpreter-machine.svg';
+interpreterMachineImage.alt = 'An outline style illustration of the interpreter machine.';
+interpreterMachineImageTextContainer.appendChild(interpreterMachineImage);
 
-// page 4: the combinator machine
+// page 6: the combinator machine
 const combinatorMachineHeader = document.createElement('h1');
 combinatorMachineHeader.innerText = 'The Combinator Machine';
-pages[4].appendChild(combinatorMachineHeader);
+pages[6].appendChild(combinatorMachineHeader);
+const combinatorMachineImage = document.createElement('img');
+combinatorMachineImage.src = 'resources/ui/owners-manual/combinator-machine.svg';
+combinatorMachineImage.alt = 'An outline style illustration of the combinator machine.';
+pages[6].appendChild(combinatorMachineImage);
 const combinatorMachineParagraph = document.createElement('p');
 // eslint-disable-next-line max-len
 combinatorMachineParagraph.innerText = 'The Combinator Machine will take two parent plantsongs and combine them into a bunch of children plantsongs that share many shared characteristics, both visually and musically, with their parents. To use the Combinator Machine:';
-pages[4].appendChild(combinatorMachineParagraph);
+pages[6].appendChild(combinatorMachineParagraph);
 const combinatorMachineInstructions = document.createElement('ol');
-pages[4].appendChild(combinatorMachineInstructions);
+pages[6].appendChild(combinatorMachineInstructions);
 const placePlantsInstruction = document.createElement('li');
 // eslint-disable-next-line max-len
 placePlantsInstruction.innerText = 'Place the two plantsongs you wish to combine on the two plates on the left side of the machine.';

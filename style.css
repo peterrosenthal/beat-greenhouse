@@ -85,6 +85,18 @@ canvas {
   border-radius: 0.75em;
 }
 
+.owners-manual-page img {
+  max-width: 40em;
+  max-height: 30em;
+}
+
+.owners-manual-page .img-txt-container {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
 .play-button {
   color: white;
   background: #4da87d;
