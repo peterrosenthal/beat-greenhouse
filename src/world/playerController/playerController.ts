@@ -34,13 +34,18 @@ export const camera = new THREE.PerspectiveCamera(
   45
 );
 camera.position.set(10, 2.3, 0);
+let cameraSweeping = false;
 
 let controls!: PointerLockControls;
 export const raycaster = new THREE.Raycaster();
 
 export const crosshair = document.createElement('div');
 crosshair.classList.add('crosshair');
-crosshair.innerText = '.';
+crosshair.style.display = 'none';
+const crosshairImage = document.createElement('img');
+crosshairImage.alt = '+';
+crosshairImage.src = 'resources/ui/crosshair/leaf.png';
+crosshair.appendChild(crosshairImage);
 
 document.body.appendChild(crosshair);
 
@@ -81,6 +86,11 @@ export function update(): void {
   }
 
   const delta = TimeManager.delta / 1000;
+
+  if (cameraSweeping) {
+    camera.position.x += delta;
+    return;
+  }
 
   /* move player */
   // update direction
@@ -160,7 +170,7 @@ export function unlockControls(showMenu = false): void {
 }
 
 export function showCrosshair(): void {
-  crosshair.style.display = 'block';
+  crosshair.style.display = 'flex';
 }
 
 export function hideCrosshair(): void {
@@ -284,6 +294,9 @@ function onMouseDown(): void {
 
 function onKeyDown(event: KeyboardEvent): void {
   updateMovementState(event.code, true);
+  if (event.code === 'KeyP') {
+    sweepCamera();
+  }
 }
 
 function onKeyUp(event: KeyboardEvent): void {
@@ -313,4 +326,11 @@ function updateMovementState(code: string, value: boolean): void {
 
 export function setPlantsong(plant: Plantsong | undefined): void {
   plantsong = plant;
+}
+
+function sweepCamera(): void {
+  camera.position.set(0, 12, -4.7);
+  camera.lookAt(0, 6.5, 0);
+  camera.position.x = -20;
+  cameraSweeping = true;
 }
