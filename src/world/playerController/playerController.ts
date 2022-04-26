@@ -31,7 +31,7 @@ export const camera = new THREE.PerspectiveCamera(
   45,
   SizesManager.aspectRatio,
   0.45,
-  45
+  45,
 );
 camera.position.set(10, 2.3, 0);
 let cameraSweeping = false;

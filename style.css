@@ -35,8 +35,8 @@ canvas {
 
 .crosshair img {
   text-align: center;
-  width: 4%;
-  max-width: 2.5em;
+  width: 2%;
+  max-width: 1.5em;
 }
 
 .pause-menu {
@@ -71,7 +71,7 @@ canvas {
 }
 
 .arrow-button img {
-  width: 100%;
+  width: 80%;
 }
 
 .owners-manual {
